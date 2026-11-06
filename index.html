@@ -1,498 +1,101 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<meta name="theme-color" content="#f7f9f8">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>SLICE FLOW — 指先で、立体を切る。</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#f4f8f7">
+<title>SLICE FLOW — Think before you cut</title>
 <style>
-:root{
- --ink:#173c43;--text:#294a4d;--mute:#8ba2a0;--mint:#078f87;--mint2:#37c6b2;
- --gold:#d69b63;--goldlite:#f7ebe1;--line:#dae9e5;--paper:#f7f9f8;
- --ease:cubic-bezier(.2,.85,.25,1);
-}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;width:100%;min-height:100%;background:var(--paper);color:var(--ink);overscroll-behavior:none}
-body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;-webkit-font-smoothing:antialiased}
-button{font:inherit;touch-action:manipulation;cursor:pointer}
-button:focus-visible{outline:2px solid #2aaea2;outline-offset:3px}
-button[disabled]{cursor:default;opacity:.30}
-svg{width:19px;height:19px;display:block;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
-button svg{pointer-events:none}
-.app{width:min(100%,520px);min-height:100svh;min-height:100dvh;margin:auto;padding:calc(env(safe-area-inset-top) + 11px) 19px calc(env(safe-area-inset-bottom) + 12px);display:flex;flex-direction:column;gap:10px}
-.header{display:flex;align-items:center;justify-content:space-between;min-height:42px;flex:0 0 auto}
-.wordmark{font-family:-apple-system,BlinkMacSystemFont,Arial,sans-serif;font-size:18px;letter-spacing:.135em;font-weight:850;white-space:nowrap;line-height:1}.wordmark span{color:var(--mint)}
-.top-actions{display:flex;gap:4px}.round-btn{background:transparent;border:none;color:#6c8b8b;height:39px;width:39px;border-radius:14px;display:grid;place-items:center;transition:background .15s,color .15s,transform .15s}
-.round-btn:active{background:#e8f2f0;transform:scale(.92)}
-.stage-head{flex:0 0 auto;padding:3px 2px 0}
-.eyebrow{display:flex;align-items:center;justify-content:space-between;font-size:10px;font-weight:800;letter-spacing:.15em;color:#7b9a98}
-.eyebrow .num{letter-spacing:.09em;font-variant-numeric:tabular-nums;font-size:12px;color:#557e7c}
-.track{margin-top:8px;width:100%;height:3px;border-radius:3px;background:#e3eae8;overflow:hidden}
-.track i{display:block;width:1%;height:100%;background:linear-gradient(90deg,#7dd7c8,#07988d);border-radius:4px;transition:width .35s ease}
-.prompt{margin:11px 0 0;display:flex;align-items:center;justify-content:center;gap:8px;font-size:18px;font-weight:820;letter-spacing:.04em;line-height:1.3;text-align:center}
-.prompt .tiny-star{width:7px;height:7px;border:1.5px solid #b3c8c2;transform:rotate(45deg);border-radius:2px;flex-shrink:0}
-.subprompt{text-align:center;color:#92a7a5;font-size:11px;font-weight:580;letter-spacing:.025em;margin-top:5px;min-height:13px}
-.arena{position:relative;flex:1 1 auto;min-height:270px;max-height:520px;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;background:radial-gradient(ellipse 90% 75% at 48% 43%,#fff 0%,#fcfefd 45%,#f1f8f6 100%);border-radius:28px;border:1px solid #e1ebe8;box-shadow:0 19px 52px rgba(31,75,72,.075),inset 0 1px 0 #fff;overflow:hidden;isolation:isolate;transform:translateZ(0)}
-.arena.grabbing{cursor:grabbing}
-.arena:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.45;background-image:radial-gradient(circle,#c6dcd7 0.65px,transparent .8px);background-size:25px 25px;mask-image:linear-gradient(to bottom,transparent 10%,#000 90%);-webkit-mask-image:linear-gradient(to bottom,transparent 10%,#000 90%)}
-#scene{position:absolute;width:100%;height:100%;inset:0;display:block;touch-action:none}
-.arena-tag{position:absolute;left:17px;top:17px;display:flex;align-items:center;gap:7px;font-size:11px;font-weight:740;color:#688985;pointer-events:none;letter-spacing:.015em}
-.arena-tag .tag-dot{width:7px;height:7px;border-radius:50%;border:2px solid #47bcae;background:#fff;box-shadow:0 0 0 3px #dff6ed}
-.live-angles{position:absolute;right:18px;top:17px;display:flex;align-items:center;gap:5px;font-size:11px;font-family:ui-monospace,"SFMono-Regular",Menlo,monospace;font-weight:700;letter-spacing:.025em;color:#588e8a;pointer-events:none;font-variant-numeric:tabular-nums}
-.live-angles .angle-sep{color:#c7dcd6}
-.action-guide{position:absolute;bottom:15px;left:0;right:0;pointer-events:none;text-align:center;color:#90aaa4;font-size:11px;font-weight:680;letter-spacing:.035em;transition:opacity .35s}
-.action-guide.off{opacity:0}
-.gesture-icon{display:inline-block;color:#4eaaa1;margin-right:7px;font-size:16px;vertical-align:-1px}
-.magnet-pip{position:absolute;top:50%;left:50%;width:62px;height:62px;border-radius:50%;border:1.4px solid rgba(35,167,147,.28);transform:translate(-50%,-50%) scale(.4);opacity:0;pointer-events:none}
-.magnet-pip.pop{animation:ping .34s ease-out}
-@keyframes ping{0%{opacity:.75;transform:translate(-50%,-50%) scale(.7)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.6)}}
-.pos-control{position:absolute;right:3px;top:58px;bottom:47px;width:55px;display:none;flex-direction:column;align-items:center;justify-content:center;gap:6px;touch-action:none;cursor:ns-resize}
-.pos-rail{height:min(51%,178px);min-height:125px;position:relative;width:42px;display:flex;align-items:center;justify-content:center}
-.pos-rail:before{content:"";position:absolute;top:12px;bottom:12px;width:2px;background:#d1e4de;border-radius:4px}
-.pos-dot{position:absolute;left:50%;width:6px;height:6px;background:#b9d4cc;border-radius:50%;transform:translate(-50%,-50%)}.pos-dot.d0{top:12px}.pos-dot.d1{top:50%}.pos-dot.d2{top:calc(100% - 12px)}
-.pos-grip{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);height:30px;width:30px;background:#fff;border-radius:50%;border:2.5px solid #199b90;box-shadow:0 5px 13px #268a7c2a,0 1px 2px #267c7133;transition:box-shadow .18s}
-.pos-control.dragging .pos-grip{box-shadow:0 0 0 7px #16b39b14,0 5px 15px #268a7c42}
-.pos-title{font-size:9px;color:#81a4a0;font-weight:800;white-space:nowrap}
-.feedback{position:relative;flex:0 0 auto;display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.specimen{display:flex;align-items:center;gap:5px;min-width:0;min-height:108px;border:1px solid #e4ebe8;background:#fff;border-radius:20px;padding:11px 8px 10px 14px;box-shadow:0 3px 12px #183b3b06}
-.specimen.target{background:#fdfaf7;border-color:#f0e7dd}.specimen.current{border-color:#d7eae6;background:linear-gradient(122deg,#f6fcfa,#fff)}
-.specimen-label{flex:0 0 45%;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:5px}
-.specimen-label small{font-size:10px;font-weight:900;letter-spacing:.115em;color:#bd906d;white-space:nowrap}.specimen.current small{color:#239d91}
-.specimen-label strong{font-size:12px;line-height:1.4;font-weight:830;white-space:nowrap;color:#5f6964}.specimen.current strong{color:#2a8f83}
-.specimen-label em{font-size:10px;font-weight:690;color:#9da8a3;font-style:normal;min-height:12px;white-space:nowrap;font-variant-numeric:tabular-nums}
-.specimen canvas{min-width:0;flex:1;width:55%;height:82px;display:block}
-.bottom-actions{min-height:48px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex:0 0 auto}
-.soft-button{border:1px solid #dfeae6;background:#fff;border-radius:14px;color:#678681;padding:12px 15px;font-size:12px;font-weight:780;letter-spacing:.025em;white-space:nowrap;display:flex;align-items:center;gap:6px;min-height:45px;transition:transform .12s,background .12s}
-.soft-button:active{transform:scale(.97);background:#f0f7f5}.soft-button svg{height:15px;width:15px}
-.help-text{font-size:10px;line-height:1.4;color:#98a9a5;text-align:center;flex:1;min-width:0}
-.next-button{border:0;border-radius:14px;background:var(--mint);box-shadow:0 7px 18px #0f968728;color:#fff;font-size:13px;font-weight:810;padding:13px 16px;min-height:45px;display:none;gap:6px;align-items:center;justify-content:center;white-space:nowrap;letter-spacing:.04em}
-.next-button:active{transform:scale(.98)}
-.bottom-note{text-align:center;color:#a9bab5;font-size:9px;letter-spacing:.03em;line-height:1.2;flex:0 0 auto}
-.success-shine{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 48% 50%,#64d2bf30 0%,transparent 60%);opacity:0}
-.success-shine.show{animation:shine .95s ease-out both}
-@keyframes shine{0%{opacity:0}18%{opacity:1}100%{opacity:0}}
-.success{position:absolute;left:50%;bottom:47px;transform:translate(-50%,18px) scale(.94);opacity:0;z-index:5;pointer-events:none;display:flex;align-items:center;gap:10px;border-radius:16px;background:rgba(255,255,255,.94);border:1px solid rgba(161,220,207,.8);padding:11px 17px 11px 13px;box-shadow:0 13px 38px #197e7124,0 2px 6px #137e6b12;backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px);transition:opacity .26s,transform .43s var(--ease);white-space:nowrap}
-.success.show{opacity:1;transform:translate(-50%,0) scale(1)}
-.success-mark{width:28px;height:28px;background:var(--mint);color:#fff;border-radius:50%;display:grid;place-items:center}.success-mark svg{width:16px;height:16px;stroke-width:2.5}
-.success strong{font-size:16px;color:#167f75;font-weight:850;letter-spacing:.035em}.success small{font-size:10px;color:#93a6a0;font-weight:670}
-.lesson-dots{display:flex;gap:5px;justify-content:center;margin-top:5px}.lesson-dots span{width:4px;height:4px;background:#dae9e3;border-radius:50%}.lesson-dots span.active{background:#35afa1;width:13px}
-.sheet{position:fixed;inset:0;background:#173f4454;display:none;align-items:flex-end;justify-content:center;z-index:20;padding-top:40px;backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
-.sheet.open{display:flex}.sheet-inner{background:#fff;border-radius:27px 27px 0 0;padding:19px 20px calc(26px + env(safe-area-inset-bottom));width:min(100%,520px);max-height:min(83dvh,770px);display:flex;flex-direction:column;gap:12px;box-shadow:0 -18px 60px #112a2b29}
-.sheet-head{display:flex;justify-content:space-between;align-items:center}.sheet h2{font-size:18px;letter-spacing:.03em;margin:0}.sheet-sub{margin:0;font-size:11px;color:#92a6a2}
-.level-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px;overflow:auto;padding:4px 0 15px;overscroll-behavior:contain}
-.level-grid button{aspect-ratio:1/1;border:1px solid #e4ede9;background:#f7f9f8;border-radius:10px;font-size:12px;font-weight:750;color:#698681}
-.level-grid button.current-level{background:#dcf4ed;border-color:#8bcebd;color:#087d71}.level-grid button.done-level{background:#fff;border-color:#b6ded4;color:#18998a}
-.level-grid button.locked{color:#c6d3cd;opacity:.6}
-@media(max-width:390px){.app{padding-left:13px;padding-right:13px;gap:8px}.specimen{padding-left:10px;min-height:101px}.specimen-label{flex-basis:44%}.specimen-label strong{font-size:11px}.specimen canvas{height:76px}.arena{min-height:240px}.prompt{font-size:17px}.soft-button{padding:11px 12px}}
-@media(max-height:770px){.app{gap:7px}.stage-head{padding-top:0}.prompt{margin-top:7px}.arena{min-height:210px}.feedback .specimen{min-height:92px;padding-top:6px;padding-bottom:6px}.specimen canvas{height:75px}.bottom-note{display:none}}
-@media(max-height:640px){.arena{min-height:185px}.subprompt{margin-top:2px}.specimen{min-height:82px!important}.specimen canvas{height:65px!important}.bottom-actions{min-height:42px}.soft-button,.next-button{min-height:40px;padding-block:9px}}
-@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+:root{--ink:#15393b;--muted:#819e9d;--line:#d9e7e4;--teal:#159a92;--teal2:#56c6b9;--warm:#d18e64;--paper:#f5f8f7;--white:#fff;--bad:#ce826f}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent} html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--paper);font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue", "Hiragino Kaku Gothic ProN", "Yu Gothic",sans-serif;color:var(--ink);user-select:none;-webkit-user-select:none}
+button{font:inherit;color:inherit;border:0;cursor:pointer}button:focus-visible{outline:3px solid #68c9bd;outline-offset:3px}
+#app{height:100vh;height:100dvh;max-width:650px;margin:auto;display:flex;flex-direction:column;padding:env(safe-area-inset-top) 16px env(safe-area-inset-bottom);min-height:430px}
+header{height:63px;min-height:63px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 3px}
+.brand{font-size:21px;font-weight:860;letter-spacing:.17em;white-space:nowrap}.brand b{color:var(--teal)}.brand small{display:block;font-size:8px;letter-spacing:.30em;color:var(--muted);font-weight:650;margin-top:3px}.header-right{display:flex;gap:8px}.icon-btn{height:38px;width:38px;display:grid;place-items:center;background:transparent;border-radius:12px;color:#779896}.icon-btn svg{width:21px;height:21px}.icon-btn:active{background:#e5f0ed}.topline{display:flex;justify-content:space-between;align-items:center;font-size:11px;letter-spacing:.17em;font-weight:780;color:#7a9b98;margin:5px 4px 9px}.topline .level{font-size:15px;letter-spacing:.11em;font-variant-numeric:tabular-nums;color:#517b79}.progress{width:100%;height:3px;background:#dce9e6;border-radius:10px;overflow:hidden;margin-bottom:12px}.progress div{width:2.5%;height:100%;background:linear-gradient(90deg,#28b9aa,#90e2d6);border-radius:10px;transition:width .45s}
+.instruction{padding:0px 3px 9px;flex:none;text-align:center}.mode{font-size:10px;letter-spacing:.2em;font-weight:850;color:var(--teal)}h1{font-size:clamp(21px,6vw,27px);font-weight:850;letter-spacing:.07em;margin:6px 0 3px;line-height:1.35}.sub{font-size:12px;line-height:1.5;color:#8aa5a2;margin:0}
+.scene{position:relative;flex:1;min-height:170px;border:1px solid #d8e7e4;border-radius:27px;overflow:hidden;background:radial-gradient(ellipse 80% 80% at 50% 35%,#ffffff 0%,#f2faf8 68%,#eaf4f1 100%);box-shadow:0 14px 35px rgba(29,88,81,.045),inset 0 1px 0 white}.scene:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.48;background-image:radial-gradient(#b3d1cb .6px,transparent .7px);background-size:21px 21px;mask-image:linear-gradient(180deg,transparent 40%,black 100%)}
+#view{width:100%;height:100%;display:block;position:absolute;inset:0;touch-action:none;cursor:grab}#view:active{cursor:grabbing}
+.scene-top{position:absolute;left:14px;right:12px;top:12px;display:flex;justify-content:space-between;align-items:center;pointer-events:none}.spec{display:flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.06em;font-weight:780;color:#6c9993}.spec i{width:8px;height:8px;background:#64c5ba;border:2px solid #e5fffa;box-shadow:0 0 0 2px #8cddd4;border-radius:50%;display:block}.chip{border:1px solid #d9eae6;padding:6px 9px;background:#ffffffc7;border-radius:10px;color:#789e99;font-weight:740;font-size:10px;letter-spacing:.08em;backdrop-filter:blur(10px)}
+.scene-foot{position:absolute;bottom:12px;left:0;right:0;text-align:center;color:#8baca7;font-size:11px;font-weight:680;letter-spacing:.045em;pointer-events:none}.scene-foot strong{color:#379c92}
+.result{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity .25s}.result.visible{opacity:1}.result-label{position:absolute;right:12px;bottom:42px;background:#ffffffeb;border:1px solid #d2e7e2;box-shadow:0 8px 24px #34706915;padding:9px 13px;border-radius:14px;text-align:center;line-height:1.3;min-width:92px;transform:translateY(7px);transition:transform .28s}.visible .result-label{transform:translateY(0)}.result-label canvas{display:block;width:86px;height:64px;margin:2px auto 3px}.result-label small{display:block;font-size:10px;font-weight:750;color:#8eaaa6;letter-spacing:.09em;margin-bottom:3px}.result-label strong{font-size:18px;color:#168f86;letter-spacing:.04em}
+.controls{flex:none;display:flex;flex-direction:column;gap:9px;padding:12px 1px 8px}.control-head{min-height:18px;display:flex;align-items:center;justify-content:space-between;gap:8px}.control-head span{font-size:10px;letter-spacing:.10em;color:#7f9e99;font-weight:780}.stamps{display:flex;gap:5px}.stamps i{display:block;width:8px;height:8px;border-radius:50%;border:1px solid #c2dad5}.stamps i.on{background:#52b9ac;border-color:#52b9ac}.stamps i.failed{background:#dca28d;border-color:#dca28d}
+.choices{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.choice{height:60px;border:1px solid #d8e6e3;border-radius:15px;background:#fffafcaa;display:flex;align-items:center;justify-content:center;gap:5px;flex-direction:column;transition:transform .18s,border-color .18s,background .18s;box-shadow:0 3px 8px #183d3710}.choice:active{transform:scale(.97)}.choice.selected{border:1.5px solid #31ac9f;background:#e3f8f2;box-shadow:0 0 0 2px #b5e7dc inset}.shape-icon{height:23px;width:30px;display:block}.choice span{font-size:11px;font-weight:790;color:#668c87}.choice.selected span{color:#198e84}
+.offset-row{display:flex;align-items:center;gap:12px;background:#ffffffab;border:1px solid var(--line);border-radius:15px;padding:7px 12px;min-height:46px}.offset-label{white-space:nowrap;font-size:11px;font-weight:780;color:#6e9390}.offset-row input{flex:1;width:50%;appearance:none;-webkit-appearance:none;background:#d6e9e3;border-radius:30px;height:4px;outline:none}.offset-row input::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#fff;border:5px solid #32b8ac;box-shadow:0 2px 6px #235b5a33}.offset-row output{width:34px;text-align:right;font-size:11px;color:#6e9390;font-variant-numeric:tabular-nums}
+.actionrow{display:flex;gap:9px;align-items:center}.cut{height:54px;flex:1;background:linear-gradient(110deg,#0e807b,#21a99e);border-radius:17px;display:flex;align-items:center;justify-content:center;gap:11px;color:white;box-shadow:0 8px 18px #168f8430;font-size:15px;font-weight:840;letter-spacing:.12em;transition:transform .16s,box-shadow .16s,background .2s}.cut:active{transform:scale(.982);box-shadow:0 3px 8px #168f8430}.cut:disabled{background:#abc9c4;box-shadow:none;cursor:default}.cut svg{width:18px;height:18px;stroke:white}.cut.success{background:linear-gradient(110deg,#247b74,#34b5a4)}.cut.retry{background:#eef5f2;border:1px solid #cbe1db;color:#376f69;box-shadow:none}.cut.retry svg{stroke:#376f69}.help{height:54px;width:54px;border:1px solid #d7e6e2;background:#ffffffc9;border-radius:17px;color:#7a9e98;display:grid;place-items:center}.help svg{width:22px;height:22px}.hint{font-size:11px;color:#879e9a;text-align:center;line-height:1.4;min-height:16px;letter-spacing:.03em}.hint.warn{color:#b1745b}.hint.good{color:#149688}
+.modal-wrap{position:absolute;inset:0;background:#163c3b55;display:grid;place-items:center;padding:20px;z-index:30;backdrop-filter:blur(8px)}.modal{width:100%;max-width:370px;background:#fffffff5;border-radius:23px;padding:24px;box-shadow:0 18px 60px #0e3a3b30;text-align:center}.modal h2{margin:3px 0 8px;letter-spacing:.05em}.modal p{font-size:13px;color:#678d88;line-height:1.75}.modal button{padding:14px 20px;border-radius:14px;background:#15988d;color:#fff;font-weight:790;margin-top:8px}.tiny{font-size:10px;letter-spacing:.06em;color:#91ada8}
+@media(max-height:710px){header{height:50px;min-height:50px}.topline{margin:1px 3px 6px}.progress{margin-bottom:8px}.instruction{padding-bottom:5px}h1{font-size:21px;margin:3px 0}.sub{font-size:11px}.scene{border-radius:22px}.controls{padding-top:7px;padding-bottom:4px;gap:6px}.choice{height:49px}.shape-icon{height:17px}.cut,.help{height:44px}.help{width:44px}.scene-foot{bottom:7px}}
+@media(max-height:560px){.brand{font-size:16px}header{height:42px;min-height:42px}.topline{font-size:9px}.scene{min-height:130px}.scene-foot{font-size:9px}.instruction .sub{display:none}.controls{gap:4px}.control-head{min-height:14px}}
 </style>
 </head>
 <body>
-<main class="app">
-  <header class="header">
-   <div class="wordmark" aria-label="SLICE FLOW">SLICE <span>FLOW</span></div>
-   <nav class="top-actions" aria-label="ゲームメニュー">
-    <button class="round-btn" id="prev" title="前の問題" aria-label="前の問題"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
-    <button class="round-btn" id="levels" title="ステージ一覧" aria-label="ステージ一覧"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.2"/><rect x="14" y="3" width="7" height="7" rx="1.2"/><rect x="3" y="14" width="7" height="7" rx="1.2"/><rect x="14" y="14" width="7" height="7" rx="1.2"/></svg></button>
-    <button class="round-btn" id="sound" title="音のオン・オフ" aria-label="音をオフにする"><svg id="soundIcon" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18 5a10 10 0 0 1 0 14"/></svg></button>
-   </nav>
-  </header>
-  <section class="stage-head" aria-label="ステージ情報">
-   <div class="eyebrow"><span id="chapter">CHAPTER 01 · 傾ける</span><span class="num" id="stageCount">001 / 100</span></div>
-   <div class="track"><i id="progressFill"></i></div>
-   <h1 class="prompt"><i class="tiny-star"></i><span id="prompt">この断面をつくろう</span><i class="tiny-star"></i></h1>
-   <div class="subprompt" id="subprompt">指でなぞって、切る面を動かす</div>
-  </section>
-  <div class="arena" id="viewport" aria-label="3D切断面。指を上下になぞると傾きが変わります。">
-    <canvas id="scene"></canvas>
-    <div class="arena-tag"><i class="tag-dot"></i><span id="solidName">四角すい</span></div>
-    <div class="live-angles"><span id="tiltLabel">0°</span><span class="angle-sep" id="angleSep" hidden>·</span><span id="yawLabel" hidden>0°</span></div>
-    <div class="action-guide" id="dragInstruction"><span class="gesture-icon">↕</span>上へなぞって、面を傾ける</div>
-    <div class="magnet-pip" id="pip"></div>
-    <div class="pos-control" id="posControl" aria-label="切る位置" role="slider" tabindex="0" aria-valuemin="-1" aria-valuemax="1" aria-valuenow="0">
-      <div class="pos-rail" id="posRail"><i class="pos-dot d0"></i><i class="pos-dot d1"></i><i class="pos-dot d2"></i><i class="pos-grip" id="posKnob"></i></div><span class="pos-title">切る位置</span>
-    </div>
-    <div class="success-shine" id="shine"></div>
-    <div class="success" id="success" aria-live="polite"><span class="success-mark"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg></span><div><strong>ぴったり！</strong><div><small id="winDetail">断面が重なった</small></div></div></div>
-  </div>
-  <div class="feedback" aria-label="断面の比較">
-    <div class="specimen target"><div class="specimen-label"><small>GOAL</small><strong>めざす断面</strong><em id="goalEdges">目標</em></div><canvas id="goalCanvas" aria-label="目標の断面"></canvas></div>
-    <div class="specimen current"><div class="specimen-label"><small>YOUR CUT</small><strong>いまの断面</strong><em id="nowEdges">いまの形</em></div><canvas id="nowCanvas" aria-label="現在の断面"></canvas></div>
-  </div>
-  <div class="bottom-actions">
-    <button class="soft-button" id="hint"><svg viewBox="0 0 24 24"><path d="M9 18h6m-5-4h4m-4 7h4M8 15c-1.5-1.3-2.5-3-2.5-5A6.5 6.5 0 0 1 12 3.5 6.5 6.5 0 0 1 18.5 10c0 2-1 3.7-2.5 5L15 17H9l-1-2Z"/></svg>ヒント</button>
-    <div class="help-text" id="status">指を離すと、角度がカチッと揃う</div>
-    <button class="soft-button" id="reset" title="切断面を最初に戻す" aria-label="切断面を元に戻す"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button>
-    <button class="next-button" id="next">次の問題 <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
-  </div>
-  <div class="bottom-note">音・ヒント・進み具合はいつでも調整できます</div>
-</main>
-<div class="sheet" id="levelSheet" aria-hidden="true" role="dialog" aria-label="ステージ一覧">
- <div class="sheet-inner"><div class="sheet-head"><h2>ステージを選ぶ</h2><button class="round-btn" id="closeLevels" aria-label="閉じる"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div><p class="sheet-sub">クリアしたところまで、いつでも戻れます。</p><div class="level-grid" id="levelGrid"></div></div>
+<div id="app">
+<header><div class="brand">SLICE <b>FLOW</b><small>THINK BEFORE YOU CUT</small></div><div class="header-right"><button class="icon-btn" id="levels" aria-label="ステージを選ぶ" title="ステージ選択"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></button><button class="icon-btn" id="sound" aria-label="音の切り替え"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 10v4h4l5 4V6l-5 4H4Z"/><path d="M16 9c1.5 1.5 1.5 4.5 0 6M19 6c3.5 3.5 3.5 8.5 0 12"/></svg></button></div></header>
+<div class="topline"><span id="chapter">CHAPTER 01 · 見えない断面</span><span class="level" id="num">001 / 040</span></div><div class="progress"><div id="progress"></div></div>
+<section class="instruction"><div class="mode" id="mode">01 — PREDICT</div><h1 id="title">切ったら、何角形？</h1><p class="sub" id="subtitle">切るまで断面は見えない。頭の中で想像しよう。</p></section>
+<div class="scene" id="scene"><canvas id="view" aria-label="立体と切断平面の3Dビュー"></canvas><div class="scene-top"><div class="spec"><i></i><span id="solid">CUBE · 立方体</span></div><div class="chip" id="status">CUT PREVIEW OFF</div></div><div class="scene-foot" id="scenefoot">↔ 指で立体を回して、交わる辺を探そう</div><div class="result" id="result"><div class="result-label"><small>切断された形</small><canvas id="section2d" width="172" height="128" aria-label="断面の形を正面から表示"></canvas><strong id="resultname">五角形</strong></div></div></div>
+<section class="controls"><div class="control-head"><span id="controltitle">断面を予想して選ぶ</span><div class="stamps" id="stamps"></div></div><div class="choices" id="choices"></div><div class="offset-row" id="offsetrow" style="display:none"><span class="offset-label">切断する位置</span><input id="offset" type="range" min="-8" max="8" step="1" value="0" aria-label="切断面の位置"><output id="offsetout">0</output></div><div class="actionrow"><button class="cut" id="cut" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19 19 4M8 4h11v11"/></svg><span id="cutlabel">選んでから CUT</span></button><button class="help" id="help" aria-label="ヒントを見る"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 18h6M10 21h4M8.8 14.8C7.6 13.8 7 12.3 7 10.6a5 5 0 0 1 10 0c0 1.7-.6 3.2-1.8 4.2-.9.7-1.2 1.3-1.2 2.2h-4c0-.9-.3-1.5-1.2-2.2Z"/></svg></button></div><div class="hint" id="hint">正解を確かめるのは、切った後。</div></section>
 </div>
+<div class="modal-wrap" id="modalwrap" style="display:none"><div class="modal" id="modal"></div></div>
 <script>
-
 (()=>{'use strict';
-const TOTAL=100, TAU=Math.PI*2, EPS=1e-7;
-const $=id=>document.getElementById(id);
-const xadd=(a,b)=>a.map((v,i)=>v+b[i]), xsub=(a,b)=>a.map((v,i)=>v-b[i]), dot=(a,b)=>a.reduce((s,v,i)=>s+v*b[i],0), cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]], norm=a=>Math.hypot(...a), unit=a=>a.map(x=>x/(norm(a)||1));
-const rndMaker=seed=>{let s=seed>>>0;return ()=>{s=(s+0x6d2b79f5)>>>0;let t=Math.imul(s^(s>>>15),1|s);t^=t+Math.imul(t^(t>>>7),61|t);return ((t^(t>>>14))>>>0)/4294967296}};
-const round=(v,p=1000)=>Math.round(v*p)/p;
-const shapeName=['四角すい','三角柱','四角柱','五角柱','斜めの柱','屋根型','八面体','六角柱'];
-function polygon2d(n,r,phase,rr){let p=[];for(let i=0;i<n;i++){let a=phase+TAU*i/n,k=.90+rr()*.19;p.push([Math.cos(a)*r[0]*k,Math.sin(a)*r[1]*k]);}return p;}
-function meshMake(kind,r){let vs=[],fs=[],poly,n;
- if(kind===0){ // square pyramid with an offset tip
-  poly=[[-1.08,-.93],[1.03,-.93],[1.03,.94],[-1.08,.94]];n=4;
-  poly.forEach(p=>vs.push([p[0],p[1],-.93]));vs.push([(r()-.5)*.64,(r()-.5)*.56,1.27]);
-  fs.push([3,2,1,0]);for(let i=0;i<n;i++)fs.push([i,(i+1)%n,n]);
- }else if(kind===6){ // asymmetric double pyramid
-  n=4;poly=polygon2d(n,[1.03,.88],Math.PI/4,r);poly.forEach(p=>vs.push([p[0],p[1],0]));
-  vs.push([.17+(r()-.5)*.28,-.13,1.21]);vs.push([-.16,.11,-.99]);
-  for(let i=0;i<n;i++){fs.push([i,(i+1)%n,n]);fs.push([(i+1)%n,i,n+1]);}
- }else{
-  n=kind===1?3:kind===3?5:kind===7?6:4;
-  if(n===4){let wx=.83+r()*.3,wy=.71+r()*.32;poly=[[-wx,-wy],[wx,-wy],[wx,wy],[-wx,wy]];}
-  else poly=polygon2d(n,[1.02,.92],Math.PI/2+(r()-.5)*.35,r);
-  let h=1.0+(r()-.5)*.2,shiftX=kind===4?.35+r()*.18:0,shiftY=kind===4?.19+r()*.2:0;
-  let slopeX=kind===5?.32+r()*.15:0,slopeY=kind===5?.12:0;
-  poly.forEach(([x,y])=>vs.push([x,y,-h]));
-  poly.forEach(([x,y])=>vs.push([x+shiftX,y+shiftY,h+slopeX*x+slopeY*y]));
-  fs.push([...Array(n)].map((_,i)=>n-1-i));fs.push([...Array(n)].map((_,i)=>n+i));
-  for(let i=0;i<n;i++)fs.push([i,(i+1)%n,(i+1)%n+n,i+n]);
- }
- let min=[Infinity,Infinity,Infinity],max=[-Infinity,-Infinity,-Infinity];
- vs.forEach(v=>v.forEach((x,i)=>{min[i]=Math.min(min[i],x);max[i]=Math.max(max[i],x)}));
- let mid=min.map((v,i)=>(v+max[i])/2),sz=Math.max(...min.map((v,i)=>max[i]-v)),sca=2.48/sz;
- vs=vs.map(v=>v.map((x,i)=>(x-mid[i])*sca));
- let edges=[],set=new Set();fs.forEach(f=>{for(let i=0;i<f.length;i++){let a=f[i],b=f[(i+1)%f.length],key=[a,b].sort((x,y)=>x-y).join(',');if(!set.has(key)){set.add(key);edges.push([a,b]);}}});
- return{vs,fs,edges,kind,name:shapeName[kind]};
-}
-function normalFor(p){let t=p.t*Math.PI/180,y=p.y*Math.PI/180;return[Math.sin(t)*Math.cos(y),Math.sin(t)*Math.sin(y),Math.cos(t)];}
-function planeFor(mesh,pose){let n=normalFor(pose),proj=mesh.vs.map(v=>dot(v,n));let extent=Math.max(...proj.map(Math.abs));return{n,d:pose.o*extent*.52};}
-function section(mesh,pose){let {n,d}=planeFor(mesh,pose),points=[];
- for(const [i,j] of mesh.edges){let a=mesh.vs[i],b=mesh.vs[j],da=dot(a,n)-d,db=dot(b,n)-d;
-  if(Math.abs(da)<EPS)points.push(a);
-  if(Math.abs(db)<EPS)points.push(b);
-  if(da*db< -EPS*EPS){let f=da/(da-db);points.push(a.map((x,k)=>x+(b[k]-x)*f));}
- }
- let unique=[];points.forEach(p=>{if(!unique.some(q=>norm(xsub(p,q))<1e-5))unique.push(p);});
- if(unique.length<3)return null;
- let ref=Math.abs(n[2])<.92?[0,0,1]:[0,1,0],u=unit(cross(ref,n)),v=unit(cross(n,u));
- let p2=unique.map(p=>[dot(p,u),dot(p,v)]),center=p2.reduce((s,p)=>[s[0]+p[0]/p2.length,s[1]+p[1]/p2.length],[0,0]);
- let idx=[...unique.keys()].sort((i,j)=>Math.atan2(p2[i][1]-center[1],p2[i][0]-center[0])-Math.atan2(p2[j][1]-center[1],p2[j][0]-center[0]));
- // The solids are convex; sorting cross-sectional vertices around their centroid is exact.
- let sorted=idx.map(i=>p2[i]),area=Math.abs(sorted.reduce((s,p,i)=>{let q=sorted[(i+1)%sorted.length];return s+p[0]*q[1]-p[1]*q[0]},0))*.5;
- if(area<.008)return null;
- return{points:idx.map(i=>unique[i]),xy:sorted,area,count:unique.length,plane:{n,d}};
-}
-function edgeVectorSequence(pts,start,dir){let n=pts.length,out=[];for(let k=0;k<n;k++)out.push(pts[(start+dir*k+n*3)%n]);return out;}
-function seqKey(pts){let n=pts.length,out=[];for(let i=0;i<n;i++)for(let k=1;k<=Math.floor(n/2);k++){
- let j=(i+k)%n;out.push(String(Math.round(Math.hypot(pts[i][0]-pts[j][0],pts[i][1]-pts[j][1])*1000)).padStart(5,'0'));
-}return out.join('-');}
-function canonical(s){let pts=s.xy,choice=null,key='~';for(let i=0;i<pts.length;i++)for(let dir of [1,-1]){
- let arr=edgeVectorSequence(pts,i,dir),k=seqKey(arr);if(k<key){key=k;choice=arr;}
-}
- let a=choice[0],b=choice[1],ang=-Math.atan2(b[1]-a[1],b[0]-a[0]);let c=Math.cos(ang),sn=Math.sin(ang);
- let ctr=choice.reduce((acc,p)=>[acc[0]+p[0]/choice.length,acc[1]+p[1]/choice.length],[0,0]);
- return{xy:choice.map(p=>{let x=p[0]-ctr[0],y=p[1]-ctr[1];return[x*c-y*sn,x*sn+y*c]}),key:s.count+'|'+String(Math.round(s.area*1000)).padStart(6,'0')+'|'+key};
-}
-function stageConfig(i){if(i<10)return{yaw:[0],tilt:[0,30,60,90],offset:[0],chapter:0};
- if(i<20)return{yaw:[0,90,180,270],tilt:[0,30,60,90],offset:[0],chapter:1};
- if(i<30)return{yaw:[0],tilt:[0,30,60,90],offset:[-1,0,1],chapter:2};
- if(i<50)return{yaw:[0,45,90,135,180,225,270,315],tilt:[0,30,60,90],offset:[0],chapter:3};
- return{yaw:[0,45,90,135,180,225,270,315],tilt:[0,30,60,90],offset:[-1,0,1],chapter:4};}
-function posesOf(cfg){let poses=[];for(let t of cfg.tilt)for(let y of cfg.yaw)for(let o of cfg.offset){if(t===0&&y!==0)continue;poses.push({t,y,o});}return poses;}
-function poseDistance(a,b,cfg){let at=cfg.tilt.indexOf(a.t),bt=cfg.tilt.indexOf(b.t),ay=cfg.yaw.indexOf(a.y),by=cfg.yaw.indexOf(b.y);let yy=cfg.yaw.length===1?0:Math.min(Math.abs(ay-by),cfg.yaw.length-Math.abs(ay-by));return Math.abs(at-bt)+yy+Math.abs(a.o-b.o);}
-function buildStage(i){let cfg=stageConfig(i),poses=posesOf(cfg),rand=rndMaker(99511+i*6137),found=null;
- for(let attempt=0;attempt<42;attempt++){
-  let kinds=i<4?[0,0,5,0]:i<10?[0,5,4,3,1]:i<20?[1,3,4,5,0,2]:i<30?[2,5,0,3,1]:[0,1,2,3,4,5,6,7];
-  let kind=kinds[(i+attempt*3+Math.floor(rand()*kinds.length))%kinds.length];
-  let mesh=meshMake(kind,rand),entries=poses.map(p=>{let sec=section(mesh,p);return{pose:p,sec,can:sec?canonical(sec):null};});
-  let counts=new Map();entries.forEach(e=>{if(e.can)counts.set(e.can.key,(counts.get(e.can.key)||0)+1);});
-  let eligible=entries.filter(e=>e.sec&&e.sec.area>.28&&e.sec.area<6.3&&counts.get(e.can.key)===1);
-  if(i<10){let lesson=[30,60,90,0,30,60,90,0,60,30];eligible=eligible.filter(e=>e.pose.t===lesson[i]);}
-  if(i>=20&&i<26)eligible=eligible.filter(e=>e.pose.o!==0);
-  if(i>=30&&i<50&&i%5!==0)eligible=eligible.filter(e=>e.pose.t>0&&e.pose.y!==0);
-  if(i>=50&&i%4!==0)eligible=eligible.filter(e=>e.pose.o!==0);
-  if(i>=10&&i<20)eligible=eligible.filter(e=>e.pose.t>0&&e.pose.y!==0);
-  if(i>=50&&i%3===0)eligible=eligible.filter(e=>e.pose.o!==0&&e.pose.t>0);
-  if(eligible.length===0)continue;
-  // Prefer goal sections with multiple distinguishable sides, without selecting tiny slivers.
-  let selected=eligible.map(e=>{let neighbors=entries.filter(q=>q.sec&&q.can.key!==e.can.key);
-    let sameCount=neighbors.filter(q=>q.sec.count===e.sec.count).length;
-    let desiredEdges=i<10?4:i<30?4:5;
-    let score=rand()*3+Math.min(e.sec.area,2.5)*.15+Math.max(0,1.6-Math.abs(e.sec.count-desiredEdges))*.2+(sameCount?1:0)*.1;
-    if(i%7===0)score+=e.sec.count*.1;
-    return{e,score};}).sort((a,b)=>b.score-a.score)[0].e;
-  let startCandidates=entries.filter(e=>e.sec&&e.can.key!==selected.can.key);
-  if(i<3)startCandidates=startCandidates.filter(e=>e.pose.t===0&&e.pose.o===0&&e.pose.y===0);
-  else if(i===10)startCandidates=startCandidates.filter(e=>e.pose.y===0&&e.pose.t===30);
-  else if(i===20)startCandidates=startCandidates.filter(e=>e.pose.o===0);
-  let minDist=i<10?1:i<30?2:3;
-  let good=startCandidates.filter(e=>poseDistance(e.pose,selected.pose,cfg)>=minDist);
-  if(good.length)startCandidates=good;
-  if(startCandidates.length===0)continue;
-  let start=startCandidates[Math.floor(rand()*startCandidates.length)];
-  found={mesh,cfg,poses,goal:selected.pose,goalSection:selected.sec,goalCanon:selected.can,start:start.pose,entries,solutionCount:1,chapter:cfg.chapter,kind};break;
- }
- if(!found)throw Error('Unable to generate level '+(i+1));return found;
-}
-const stages=Array.from({length:TOTAL},(_,i)=>buildStage(i));
-
-// UI LEVEL 100 prototype: continuous control + precise discrete mathematical states.
-const chapters=['01 · 傾ける','02 · 向きを変える','03 · 切る位置','04 · 組み合わせる','05 · マスター'];
-const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
-const mix=(a,b,t)=>a+(b-a)*t;
-const mod=(v,n)=>((v%n)+n)%n;
-const nearest=(val,items)=>items.reduce((best,v)=>Math.abs(v-val)<Math.abs(best-val)?v:best,items[0]);
-const UI={
- audioEnabled:true,context:null,noise:null,
- ensureAudio(){if(!this.audioEnabled)return null;try{this.context=this.context||new(window.AudioContext||window.webkitAudioContext)();if(this.context.state==='suspended')this.context.resume();return this.context;}catch(e){return null}},
- tone(f,at,dur,vol,kind='sine'){
-  let c=this.ensureAudio();if(!c)return;let o=c.createOscillator(),g=c.createGain();o.type=kind;
-  o.frequency.setValueAtTime(f,at);if(kind==='sine')o.frequency.exponentialRampToValueAtTime(f*.985,at+dur);
-  g.gain.setValueAtTime(.00001,at);g.gain.exponentialRampToValueAtTime(vol,at+.008);
-  g.gain.exponentialRampToValueAtTime(.00001,at+dur);
-  o.connect(g);g.connect(c.destination);o.start(at);o.stop(at+dur+.015);
- },
- tick(){let c=this.ensureAudio();if(!c)return;let t=c.currentTime;this.tone(520,t,.066,.013);this.tone(1040,t+.003,.035,.0031)},
- win(){let c=this.ensureAudio();if(!c)return;let t=c.currentTime;this.tone(523.25,t,.43,.034);this.tone(659.25,t+.11,.44,.026);this.tone(783.99,t+.21,.65,.024)},
-};
-let saved={};try{saved=JSON.parse(localStorage.getItem('slice-flow-v3')||'{}')}catch(e){}
-let oldSaved={};try{oldSaved=JSON.parse(localStorage.getItem('slice-flow-v2')||'{}')}catch(e){}
-let unlocked=clamp(Number.isFinite(+saved.unlocked)?+saved.unlocked:(+oldSaved.unlocked||0),0,99);
-let index=clamp(Number.isFinite(+saved.index)?+saved.index:(+oldSaved.index||0),0,unlocked);
-UI.audioEnabled=saved.sound!==false;
-const scene=$('scene'),goalCanvas=$('goalCanvas'),nowCanvas=$('nowCanvas'),view=$('viewport');
-let stage,pose={t:0,y:0,o:0},solved=false,moveCount=0,hintCount=0,drag=null,offsetDrag=null,snapMotion=null,drawRequested=false,animateUntil=0,hasInteracted=false;
-const DPR=()=>Math.min(window.devicePixelRatio||1,2.5);
-const ctxFor=c=>{let w=c.clientWidth,h=c.clientHeight,d=DPR();let cw=Math.max(1,Math.round(w*d)),ch=Math.max(1,Math.round(h*d));if(c.width!==cw||c.height!==ch){c.width=cw;c.height=ch;}let ctx=c.getContext('2d');ctx.setTransform(d,0,0,d,0,0);return{ctx,w,h};};
-const viewportProj=(p,w,h,s)=>{
- const az=.80,el=.42,ca=Math.cos(az),sa=Math.sin(az),ce=Math.cos(el),se=Math.sin(el);
- const right=[ca,-sa,0],up=[-sa*se,-ca*se,ce],forward=[sa*ce,ca*ce,se];
- return[w*.475+dot(p,right)*s,h*.46-dot(p,up)*s,dot(p,forward)];
-};
-const pathPoly=(ctx,a)=>{if(!a||a.length<3)return;ctx.beginPath();ctx.moveTo(a[0][0],a[0][1]);for(let i=1;i<a.length;i++)ctx.lineTo(a[i][0],a[i][1]);ctx.closePath();};
-const strokeLine=(ctx,a,b,color,width)=>{ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.lineWidth=width;ctx.strokeStyle=color;ctx.stroke();};
-function drawArena(now){
- let{ctx,w,h}=ctxFor(scene);ctx.clearRect(0,0,w,h);if(!stage)return;
- const isSuccess=solved,geometry=stage.mesh;
- const scale=Math.min(w*.355,h*.405)*.71*(h<300?.82:h<400?.91:1);
- const project=p=>viewportProj(p,w,h,scale);
- const light=unit([-.35,.30,.92]),camera=unit([Math.sin(.8)*Math.cos(.42),Math.cos(.8)*Math.cos(.42),Math.sin(.42)]);
- let ctrX=w*.475,baseY=h*.77;
- // Atmospheric contact shadow, calibrated to stay quiet.
- let gr=ctx.createRadialGradient(ctrX,baseY,8,ctrX,baseY,w*.34);
- gr.addColorStop(0,'rgba(37,104,104,.145)');gr.addColorStop(.45,'rgba(50,129,119,.065)');gr.addColorStop(1,'rgba(60,120,120,0)');
- ctx.fillStyle=gr;ctx.beginPath();ctx.ellipse(ctrX,baseY,w*.33,h*.10,0,0,TAU);ctx.fill();
- // Transparent solid: softly layered panes, an outer bevel and precise edges.
- const faces=geometry.fs.map(face=>{
-  let ps=face.map(i=>project(geometry.vs[i]));let a=geometry.vs[face[0]],b=geometry.vs[face[1]],c=geometry.vs[face[2]];
-  let n=unit(cross(xsub(b,a),xsub(c,a)));
-  return{ps,depth:ps.reduce((sum,p)=>sum+p[2]/ps.length,0),n,light:dot(n,light),front:dot(n,camera)>0};
- }).sort((a,b)=>a.depth-b.depth);
- faces.forEach(f=>{
-  pathPoly(ctx,f.ps);
-  let intensity=clamp(.5+f.light*.30,0,1),alpha=f.front?.14:.075;
-  ctx.fillStyle=f.front?`rgba(${Math.round(68+intensity*50)},${Math.round(159+intensity*43)},${Math.round(161+intensity*33)},${alpha})`:`rgba(139,194,193,${alpha})`;
-  ctx.fill();
- });
- // Cut plane: an animated, semi-transparent precision disk.
- let sec=section(geometry,pose),{n,d}=planeFor(geometry,pose);
- const ref=Math.abs(n[2])<.9?[0,0,1]:[0,1,0],u=unit(cross(ref,n)),v=unit(cross(n,u)),c=n.map(z=>z*d);
- let r=1.43;
- let plane=Array.from({length:44},(_,i)=>{let a=TAU*i/44;return project(xadd(c,xadd(u.map(x=>x*r*Math.cos(a)),v.map(x=>x*r*Math.sin(a)))))});
- ctx.save();pathPoly(ctx,plane);
- let pgrad=ctx.createLinearGradient(ctrX-w*.2,h*.26,ctrX+w*.24,h*.68);
- pgrad.addColorStop(0,'rgba(52,191,166,.07)');pgrad.addColorStop(.45,'rgba(27,174,161,.13)');pgrad.addColorStop(1,'rgba(8,150,135,.07)');
- ctx.fillStyle=pgrad;ctx.fill();ctx.restore();
- pathPoly(ctx,plane);ctx.lineWidth=1.15;ctx.strokeStyle='rgba(35,167,151,.40)';ctx.stroke();
- // Tangential highlights of the solid shell.
- geometry.edges.forEach(([ia,ib])=>{
-  let a=project(geometry.vs[ia]),b=project(geometry.vs[ib]);
-  strokeLine(ctx,a,b,'rgba(255,255,255,.91)',3.6);
-  strokeLine(ctx,a,b,'rgba(67,118,121,.54)',1.35);
- });
- if(sec){
-  const points=sec.points.map(project);
-  ctx.save();pathPoly(ctx,points);
-  ctx.shadowColor=isSuccess?'rgba(9,194,167,.65)':'rgba(12,161,147,.31)';ctx.shadowBlur=isSuccess?28:14;
-  let fill=ctx.createLinearGradient(ctrX-w*.2,h*.29,ctrX+w*.2,h*.74);
-  fill.addColorStop(0,isSuccess?'rgba(76,216,187,.79)':'rgba(74,206,176,.50)');
-  fill.addColorStop(1,isSuccess?'rgba(12,164,147,.85)':'rgba(6,159,147,.56)');
-  ctx.fillStyle=fill;ctx.fill();ctx.restore();
-  ctx.save();pathPoly(ctx,points);ctx.lineWidth=isSuccess?4.2:3.0;ctx.strokeStyle=isSuccess?'#078b7b':'#079d8b';ctx.lineJoin='round';ctx.stroke();
-  ctx.globalAlpha=.93;points.forEach(p=>{ctx.beginPath();ctx.arc(p[0],p[1],2.5,0,TAU);ctx.fillStyle='#fcfffd';ctx.fill();});ctx.restore();
- }
- if(hintCount){let pts=stage.goalSection.points;let show=[pts[0],pts[Math.floor(pts.length/2)]].slice(0,hintCount);
-  show.forEach(p=>{let [x,y]=project(p);ctx.beginPath();ctx.arc(x,y,10,0,TAU);ctx.fillStyle='rgba(234,170,89,.17)';ctx.fill();ctx.beginPath();ctx.arc(x,y,5,0,TAU);ctx.fillStyle='#dfaa75';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();});
- }
- // Discrete angle notches: physical feedback, drawn beneath sculpture.
- let cfg=stage.cfg,x0=w*.475,y0=h*.90;
- if(h>260){ctx.save();for(let i=0;i<cfg.tilt.length;i++){
-    let x=x0+(i-(cfg.tilt.length-1)/2)*19;
-    let active=Math.abs(pose.t-cfg.tilt[i])<3.5;
-    ctx.beginPath();ctx.arc(x,y0,active?3:2,0,TAU);ctx.fillStyle=active?'rgba(16,157,139,.80)':'rgba(154,194,187,.55)';ctx.fill();
-   }ctx.restore();}
- if(isSuccess&&now<animateUntil){let f=1-(animateUntil-now)/840;f=clamp(f,0,1);ctx.save();ctx.strokeStyle=`rgba(19,179,152,${(1-f)*.24})`;ctx.lineWidth=1.6;
-  ctx.beginPath();ctx.ellipse(ctrX,h*.50,w*(.12+f*.26),h*(.10+f*.20),0,0,TAU);ctx.stroke();ctx.restore();}
-}
-function drawSection(canvas,sec,goal=false){
- let{ctx,w,h}=ctxFor(canvas);ctx.clearRect(0,0,w,h);
- if(!sec)return;
- let vs=canonical(sec).xy;
- // Equal, fixed physical scale for goal and current. Same shape + size -> exact overlay.
- let scale=Math.min(w,h)*.32;
- let pts=vs.map(p=>[w/2+p[0]*scale,h/2-p[1]*scale]);
- ctx.save();pathPoly(ctx,pts);ctx.lineJoin='round';ctx.lineWidth=2.2;
- ctx.fillStyle=goal?'rgba(220,156,105,.13)':'rgba(26,169,148,.18)';ctx.fill();
- ctx.strokeStyle=goal?'#cf986d':'#089f91';ctx.stroke();ctx.restore();
- pts.forEach(([x,y])=>{ctx.beginPath();ctx.arc(x,y,2.05,0,TAU);ctx.fillStyle=goal?'#d79a69':'#149b8b';ctx.fill();});
-}
-function draw(){drawRequested=false;let now=performance.now();
- if(snapMotion){let p=clamp((now-snapMotion.start)/snapMotion.duration,0,1);
-  let eased=p<1?1-Math.pow(1-p,3):1;
-  pose.t=mix(snapMotion.from.t,snapMotion.to.t,eased);pose.y=mix(snapMotion.from.y,snapMotion.to.y,eased);pose.o=mix(snapMotion.from.o,snapMotion.to.o,eased);
-  if(p>=1){pose={...snapMotion.to};let callback=snapMotion.done;snapMotion=null;if(callback)callback();}}
- drawArena(now);drawSection(nowCanvas,section(stage.mesh,pose));
- $('tiltLabel').textContent=Math.round(pose.t)+'°';
- $('yawLabel').textContent=Math.round(mod(pose.y,360))+'°';
- let cfg=stage.cfg,nowSec=section(stage.mesh,pose);
- $('nowEdges').textContent=nowSec?`${nowSec.count}角形`:'断面なし';
- if(cfg.offset.length>1){let position=(1-pose.o)*.5;let rail=$('posRail').getBoundingClientRect();let t=12+(rail.height-24)*position;$('posKnob').style.top=t+'px';$('posControl').setAttribute('aria-valuenow',Math.round(pose.o));}
- if(snapMotion||(solved&&now<animateUntil))requestPaint();
-}
-function requestPaint(){if(!drawRequested){drawRequested=true;requestAnimationFrame(draw)}}
-function save(){try{localStorage.setItem('slice-flow-v3',JSON.stringify({unlocked,index,sound:UI.audioEnabled}))}catch(e){}}
-function labelSection(sec){return sec?`${sec.count}角形`:'断面なし'}
-function initStage(i){
- index=i;stage=stages[i];pose={...stage.start};solved=false;moveCount=0;hintCount=0;drag=null;offsetDrag=null;snapMotion=null;
- $('chapter').textContent='CHAPTER '+chapters[stage.chapter];$('stageCount').textContent=String(i+1).padStart(3,'0')+' / '+TOTAL;
- $('progressFill').style.width=(i+1)/TOTAL*100+'%';$('solidName').textContent=stage.mesh.name;
- $('prev').disabled=i===0;$('yawLabel').hidden=stage.cfg.yaw.length===1;$('angleSep').hidden=stage.cfg.yaw.length===1;
- $('posControl').style.display=stage.cfg.offset.length>1?'flex':'none';
- $('prompt').textContent=i===0?'切る面を、傾けよう':i===10?'横にも動かしてみよう':i===20?'切る位置も変えてみよう':'この断面をつくろう';
- $('subprompt').textContent=i<10?'上下になぞると、切る面が回転する':i<20?'上下と左右の動きを組み合わせよう':i<30?'右のレールで、切る高さも変えられる':'形も大きさも、ぴったり重ねよう';
- $('hint').disabled=false;$('hint').innerHTML='<svg viewBox="0 0 24 24"><path d="M9 18h6m-5-4h4m-4 7h4M8 15c-1.5-1.3-2.5-3-2.5-5A6.5 6.5 0 0 1 12 3.5 6.5 6.5 0 0 1 18.5 10c0 2-1 3.7-2.5 5L15 17H9l-1-2Z"/></svg>ヒント';
- $('reset').style.display='flex';$('next').style.display='none';$('status').style.display='block';$('status').textContent='指を離すと、角度がカチッと揃う';
- $('success').classList.remove('show');$('shine').classList.remove('show');
- $('dragInstruction').innerHTML=stage.cfg.yaw.length>1?'<span class="gesture-icon">↕ ↔</span>上下・左右になぞって回す':'<span class="gesture-icon">↕</span>上へなぞって、面を傾ける';
- $('dragInstruction').classList.toggle('off',i>=3);
- $('goalEdges').textContent=labelSection(stage.goalSection);
- drawSection(goalCanvas,stage.goalSection,true);save();requestPaint();
-}
-function animateTo(next,after,duration=215){
- snapMotion={from:{...pose},to:{...next},start:performance.now(),duration,done:after};
- requestPaint();
-}
-function pulseDetent(){const pip=$('pip');pip.classList.remove('pop');void pip.offsetWidth;pip.classList.add('pop');}
-function tickDetent(){UI.tick();pulseDetent();if('vibrate'in navigator)try{navigator.vibrate(6)}catch(e){}}
-function nearestPose(){let c=stage.cfg;let y=mod(nearest(pose.y,c.yaw.length===1?[0]:[...c.yaw.map(a=>a-360),...c.yaw,...c.yaw.map(a=>a+360)]),360);
- let t=nearest(pose.t,c.tilt),o=nearest(pose.o,c.offset);
- if(t===0)y=0;
- return{t,y,o};
-}
-function snapAndCheck(){if(solved)return;let target=nearestPose();
- let changed=Math.abs(target.t-pose.t)>.2||Math.abs(target.y-pose.y)>.2||Math.abs(target.o-pose.o)>.01;
- if(changed)tickDetent();
- animateTo(target,()=>{if(!solved){checkWin();}},changed?205:35);
-}
-function checkWin(){
- if(solved)return;
- let sec=section(stage.mesh,pose);
- if(sec&&canonical(sec).key===stage.goalCanon.key){
-  solved=true;unlocked=Math.max(unlocked,Math.min(TOTAL-1,index+1));save();UI.win();
-  $('winDetail').textContent=moveCount<=2?'見事なひらめき！':'断面を見つけた！';
-  $('success').classList.add('show');$('shine').classList.remove('show');void $('shine').offsetWidth;$('shine').classList.add('show');
-  $('next').style.display='inline-flex';$('reset').style.display='none';$('status').textContent='正解！';$('status').style.display='none';$('hint').disabled=true;
-  animateUntil=performance.now()+840;requestPaint();
- }
-}
-function stepChange(type,step){
- if(solved||!step)return;
- let cfg=stage.cfg,tgt={...pose},changed=false;
- if(type==='tilt'){let idx=cfg.tilt.indexOf(nearest(pose.t,cfg.tilt));let n=clamp(idx+step,0,cfg.tilt.length-1);tgt.t=cfg.tilt[n];changed=n!==idx;}
- if(type==='yaw'&&cfg.yaw.length>1){let idx=cfg.yaw.indexOf(nearest(mod(pose.y,360),cfg.yaw));let n=mod(idx+step,cfg.yaw.length);tgt.y=cfg.yaw[n];changed=n!==idx;if(tgt.t===0)tgt.t=cfg.tilt[1];}
- if(type==='offset'&&cfg.offset.length>1){let idx=cfg.offset.indexOf(nearest(pose.o,cfg.offset));let n=clamp(idx+step,0,cfg.offset.length-1);tgt.o=cfg.offset[n];changed=n!==idx;}
- if(changed){snapMotion=null;moveCount++;tickDetent();animateTo(tgt,checkWin,200);}
-}
-// Surface gesture: actual plane follows finger on every movement; the result snaps to a discrete mathematical solution.
-view.addEventListener('pointerdown',e=>{
- if(solved||e.target.closest('#posControl'))return;
- if(drag)return;
- e.preventDefault();UI.ensureAudio();snapMotion=null;
- drag={id:e.pointerId,x:e.clientX,y:e.clientY,start:{...pose},lastT:nearest(pose.t,stage.cfg.tilt),lastY:nearest(mod(pose.y,360),stage.cfg.yaw),moved:false};
- try{view.setPointerCapture(e.pointerId)}catch(_){}
- view.classList.add('grabbing');$('dragInstruction').classList.add('off');
-});
-view.addEventListener('pointermove',e=>{
- if(!drag||drag.id!==e.pointerId||solved)return;
- e.preventDefault();let dx=e.clientX-drag.x,dy=e.clientY-drag.y,cfg=stage.cfg;
- if(Math.hypot(dx,dy)>2)drag.moved=true;
- // Small soft attraction (not a dead-zone) around discrete click positions.
- const influence=(v,arr)=>{let n=nearest(v,arr),dif=v-n;return Math.abs(dif)<5?n+dif*.73:v;};
- let min=cfg.tilt[0],max=cfg.tilt[cfg.tilt.length-1];
- pose.t=influence(clamp(drag.start.t-dy*.57,min,max),cfg.tilt);
- if(cfg.yaw.length>1){
-  if(Math.abs(dx)>6&&pose.t<7)pose.t=19; // horizontal motion cannot change a mathematically horizontal plane.
-  pose.y=drag.start.y+dx*.72;
-  pose.y=influence(pose.y,Array.from({length:26},(_,i)=>-360+i*45));
- }else pose.y=0;
- // The plane changes in real time and stays in view during gestures.
- let t=nearest(pose.t,cfg.tilt),y=nearest(mod(pose.y,360),cfg.yaw);
- if(t!==drag.lastT||(cfg.yaw.length>1&&y!==drag.lastY)){
-  drag.lastT=t;drag.lastY=y;tickDetent();moveCount++;
- }
- requestPaint();
-});
-function releaseDrag(e){if(!drag||drag.id!==e.pointerId)return;
- if(!drag.moved){drag=null;view.classList.remove('grabbing');return;}
- drag=null;view.classList.remove('grabbing');snapAndCheck();
-}
-view.addEventListener('pointerup',releaseDrag);view.addEventListener('pointercancel',releaseDrag);
-// Vertical height selector: continuous visual feedback, exactly three allowed planes.
-const railY=y=>{let r=$('posRail').getBoundingClientRect();let f=clamp((y-r.top-12)/(r.height-24),0,1);return 1-2*f;};
-$('posControl').addEventListener('pointerdown',e=>{
- if(solved)return;e.preventDefault();e.stopPropagation();UI.ensureAudio();snapMotion=null;offsetDrag={id:e.pointerId,last:nearest(pose.o,stage.cfg.offset)};
- try{$('posControl').setPointerCapture(e.pointerId)}catch(_){ }
- $('posControl').classList.add('dragging');pose.o=railY(e.clientY);requestPaint();
-});
-$('posControl').addEventListener('pointermove',e=>{
- if(!offsetDrag||e.pointerId!==offsetDrag.id)return;e.preventDefault();e.stopPropagation();pose.o=railY(e.clientY);
- let k=nearest(pose.o,stage.cfg.offset);if(k!==offsetDrag.last){offsetDrag.last=k;tickDetent();moveCount++;}requestPaint();
-});
-function releaseOffset(e){if(!offsetDrag||offsetDrag.id!==e.pointerId)return;offsetDrag=null;$('posControl').classList.remove('dragging');snapAndCheck();}
-$('posControl').addEventListener('pointerup',releaseOffset);$('posControl').addEventListener('pointercancel',releaseOffset);
-$('posControl').addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown'].includes(e.key)){e.preventDefault();stepChange('offset',e.key==='ArrowUp'?1:-1)}});
-$('hint').addEventListener('click',()=>{if(solved)return;hintCount=Math.min(2,hintCount+1);$('status').textContent='金色の点を通るように切ってみよう';$('hint').disabled=hintCount>=2;requestPaint();});
-$('reset').addEventListener('click',()=>{if(solved)return;snapMotion=null;tickDetent();animateTo({...stage.start},()=>{if(!solved)checkWin()},210);});
-$('prev').addEventListener('click',()=>{if(index>0)initStage(index-1)});
-$('next').addEventListener('click',()=>{if(!solved)return;if(index<TOTAL-1)initStage(index+1);else{$('next').style.display='none';$('status').style.display='block';$('status').textContent='全100問クリア！';}});
-$('sound').addEventListener('click',()=>{UI.audioEnabled=!UI.audioEnabled;$('soundIcon').innerHTML=UI.audioEnabled?'<path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18 5a10 10 0 0 1 0 14"/>':'<path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="m16 9 5 6m0-6-5 6"/>';$('sound').setAttribute('aria-label',UI.audioEnabled?'音をオフにする':'音をオンにする');save();if(UI.audioEnabled)UI.tick()});
-if(!UI.audioEnabled)$('soundIcon').innerHTML='<path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="m16 9 5 6m0-6-5 6"/>';
-const sheet=$('levelSheet');
-function showLevels(){let grid=$('levelGrid');grid.innerHTML='';for(let i=0;i<TOTAL;i++){
- let button=document.createElement('button');button.textContent=i+1;button.disabled=i>unlocked;button.className=i===index?'current-level':i<unlocked?'done-level':i>unlocked?'locked':'';
- button.setAttribute('aria-label',`ステージ ${i+1}`);button.addEventListener('click',()=>{hideLevels();initStage(i)});grid.appendChild(button);
- }sheet.classList.add('open');sheet.setAttribute('aria-hidden','false');$('closeLevels').focus();
-}
-function hideLevels(){sheet.classList.remove('open');sheet.setAttribute('aria-hidden','true');$('levels').focus()}
-$('levels').addEventListener('click',showLevels);$('closeLevels').addEventListener('click',hideLevels);
-sheet.addEventListener('click',e=>{if(e.target===sheet)hideLevels()});
-window.addEventListener('keydown',e=>{if(e.key==='Escape'&&sheet.classList.contains('open')){hideLevels();return;}
- if(sheet.classList.contains('open')||e.target.matches('button, [role="slider"]'))return;
- if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();stepChange(e.key==='ArrowUp'||e.key==='ArrowDown'?'tilt':'yaw',e.key==='ArrowUp'||e.key==='ArrowRight'?1:-1)}
- if(e.key==='PageUp'||e.key==='PageDown'){e.preventDefault();stepChange('offset',e.key==='PageUp'?1:-1)}
-});
-window.addEventListener('resize',()=>{drawSection(goalCanvas,stage.goalSection,true);requestPaint()});
-window.addEventListener('orientationchange',()=>setTimeout(()=>{drawSection(goalCanvas,stage.goalSection,true);requestPaint()},120));
-window.__sliceDebug={stages,section,canonical,setStage:(n)=>initStage(n-1),setPose:(p)=>{snapMotion=null;pose={...p};requestPaint();checkWin()},state:()=>({index:index+1,pose,solved,solutionCount:stage.solutionCount}),summaries:()=>stages.map((s,i)=>({level:i+1,kind:s.mesh.name,options:s.entries.length,goal:s.goal,initial:s.start}))};
-initStage(index);
+const $=id=>document.getElementById(id),TAU=Math.PI*2,PI=Math.PI;
+const V=(x,y,z)=>[x,y,z],add=(a,b)=>a.map((v,i)=>v+b[i]),sub=(a,b)=>a.map((v,i)=>v-b[i]),mul=(a,k)=>a.map(v=>v*k),dot=(a,b)=>a.reduce((s,v,i)=>s+v*b[i],0),cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]],length=v=>Math.hypot(...v),norm=v=>mul(v,1/(length(v)||1));
+const shapes={cube:{name:'立方体',en:'CUBE',v:[[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]],f:[[0,3,2,1],[4,5,6,7],[0,1,5,4],[1,2,6,5],[2,3,7,6],[3,0,4,7]]},pyramid:{name:'四角すい',en:'PYRAMID',v:[[-1.14,-1.14,-.9],[1.14,-1.14,-.9],[1.14,1.14,-.9],[-1.14,1.14,-.9],[0,0,1.35]],f:[[0,3,2,1],[0,1,4],[1,2,4],[2,3,4],[3,0,4]]},prism:{name:'三角柱',en:'PRISM',v:[[-1,-.89,-1],[1,-.89,-1],[0,.95,-1],[-1,-.89,1],[1,-.89,1],[0,.95,1]],f:[[0,2,1],[3,4,5],[0,1,4,3],[1,2,5,4],[2,0,3,5]]},tetra:{name:'三角すい',en:'TETRA',v:[[1.18,1.18,1.18],[1.18,-1.18,-1.18],[-1.18,1.18,-1.18],[-1.18,-1.18,1.18]],f:[[0,1,2],[0,3,1],[0,2,3],[1,3,2]]},octa:{name:'八面体',en:'OCTAHEDRON',v:[[1.35,0,0],[-1.35,0,0],[0,1.35,0],[0,-1.35,0],[0,0,1.35],[0,0,-1.35]],f:[[0,2,4],[2,1,4],[1,3,4],[3,0,4],[2,0,5],[1,2,5],[3,1,5],[0,3,5]]}};
+for(const s of Object.values(shapes)){s.edges=[];const seen=new Set;for(const f of s.f)for(let i=0;i<f.length;i++){let a=f[i],b=f[(i+1)%f.length],key=[a,b].sort((x,y)=>x-y).join(':');if(!seen.has(key)){seen.add(key);s.edges.push([a,b]);}}}
+function normal(a,b){const A=a*PI/180,B=b*PI/180;return norm([Math.sin(A)*Math.cos(B),Math.cos(A)*Math.cos(B),Math.sin(B)]);} 
+function basis(n){let t=Math.abs(n[2])<.88?[0,0,1]:[1,0,0];let u=norm(cross(t,n));return [u,cross(n,u)];}
+function slice(s,n,d){const pts=[];for(const [i,j] of s.edges){const a=s.v[i],b=s.v[j],da=dot(a,n)-d,db=dot(b,n)-d;if(da*db>0)continue;if(Math.abs(da-db)<1e-8){if(Math.abs(da)<1e-8){pts.push(a,b);}continue;}const t=da/(da-db);if(t>=-1e-8&&t<=1+1e-8)pts.push(add(a,mul(sub(b,a),t)));}
+let arr=[];for(const p of pts)if(!arr.some(q=>length(sub(p,q))<1e-5))arr.push(p);if(arr.length<3)return {pts:[],count:0,area:0,quality:0};const c=mul(arr.reduce((t,p)=>add(t,p),[0,0,0]),1/arr.length),[u,v]=basis(n);arr.sort((p,q)=>Math.atan2(dot(sub(p,c),v),dot(sub(p,c),u))-Math.atan2(dot(sub(q,c),v),dot(sub(q,c),u)));
+// Remove degenerate collinear geometry, e.g. a plane exactly through a solid vertex.
+for(let again=true;again&&arr.length>=3;){again=false;for(let i=0;i<arr.length;i++){let a=arr[(i-1+arr.length)%arr.length],b=arr[i],c=arr[(i+1)%arr.length],aa=sub(b,a),bb=sub(c,b);if(length(cross(aa,bb))<1e-5){arr.splice(i,1);again=true;break;}}}
+let area=0,min=Infinity;for(let i=0;i<arr.length;i++){let p=arr[i],q=arr[(i+1)%arr.length];area+=dot(cross(sub(p,c),sub(q,c)),n)/2;min=Math.min(min,length(sub(q,p)));}return {pts:arr,count:arr.length,area:Math.abs(area),quality:min};}
+let rngSeed=73539;function rand(){rngSeed=(rngSeed*1664525+1013904223)>>>0;return rngSeed/4294967296;}function pick(a){return a[Math.floor(rand()*a.length)];}
+// Build a candidate library by actual geometry, not hand-written answers.
+const bank={};for(const key of Object.keys(shapes)){bank[key]=[];for(let a=-75;a<=75;a+=15)for(let b=-75;b<=75;b+=15)for(const d of [-.92,-.68,-.42,-.22,0,.22,.42,.68,.92]){const r=slice(shapes[key],normal(a,b),d);if(r.count>=3&&r.count<=6&&r.area>.33&&r.quality>.42)bank[key].push({a,b,d,count:r.count,area:r.area});}}
+function angleDist(a,b){return Math.abs(a.a-b.a)+Math.abs(a.b-b.b);}
+const titles={3:'三角形',4:'四角形',5:'五角形',6:'六角形'};
+let levels=[];function makeLevel(kind,solid,target,index){let candidates=bank[solid].filter(x=>x.count===target);if(!candidates.length)return false;let chosen,initial;if(kind==='predict'){// Use balanced plane positions and orientations; no ambiguous tangent positions.
+const used=new Set(levels.filter(l=>l.kind==='predict').map(l=>l.solid+':'+l.solution.count+':'+l.solution.d));let good=candidates.filter(x=>Math.abs(x.a)+Math.abs(x.b)>24&&!used.has(solid+':'+target+':'+x.d));chosen=pick(good.length?good:candidates);initial=chosen;
+}else{const offs=index<19?[0,.22,-.22,.42,-.42]:[-.68,-.42,-.22,0,.22,.42,.68];let buckets=offs.map(d=>({d,correct:bank[solid].filter(x=>x.d===d&&x.count===target),other:bank[solid].filter(x=>x.d===d&&x.count!==target)})).filter(x=>x.correct.length>18&&x.other.length>18&&x.correct.length/(x.correct.length+x.other.length)<.53);if(!buckets.length){buckets=offs.map(d=>({d,correct:bank[solid].filter(x=>x.d===d&&x.count===target),other:bank[solid].filter(x=>x.d===d&&x.count!==target)})).filter(x=>x.correct.length>8&&x.other.length>8)}if(!buckets.length)return false;let b=pick(buckets);chosen=pick(b.correct);let others=b.other.filter(x=>angleDist(x,chosen)>48);initial=pick(others.length?others:b.other);
+}levels.push({kind,solid,target,solution:chosen,start:{...initial},allowOffset:index>=19&&kind==='make',chapter:index<7?1:index<19?2:3});return true;}
+const plan=[['predict','cube',6],['predict','pyramid',3],['predict','prism',4],['predict','cube',5],['predict','tetra',3],['predict','octa',4],['predict','pyramid',4],['make','cube',6],['make','prism',3],['make','pyramid',4],['make','cube',5],['make','octa',6],['make','prism',5],['make','cube',3],['make','tetra',4],['make','pyramid',3],['make','octa',4],['make','cube',6],['make','prism',4],['make','cube',5],['make','pyramid',4],['make','octa',6],['make','prism',5],['make','cube',3],['make','tetra',3],['make','cube',6],['make','pyramid',5],['make','octa',4],['make','prism',4],['make','cube',5],['make','pyramid',3],['make','octa',6],['make','prism',3],['make','cube',4],['make','tetra',4],['make','cube',6],['make','pyramid',4],['make','octa',5],['make','cube',3],['make','prism',5]];
+// Interleave the two puzzle styles early, so the tactile cutting mechanic appears at stage 3.
+for(const [i,j] of [[2,7],[4,9],[6,8]])[plan[i],plan[j]]=[plan[j],plan[i]];
+for(let i=0;i<plan.length;i++){let [kind,sol,t]=plan[i];if(!makeLevel(kind,sol,t,i)){
+let fallback=false;for(const s of [sol,'cube','prism','pyramid','octa','tetra'])for(const k of [t,3,4,5,6])if(!fallback&&makeLevel(kind,s,k,i))fallback=true;
+}}
+const canvas=$('view'),ctx=canvas.getContext('2d',{alpha:true});let width=0,height=0,dpr=1;let stage=0,game=null,cam={yaw:.65,pitch:.43},drag=null,pointers=new Map,animated=null,lastStamp=-1;
+const safeGet=(key,def)=>{try{return localStorage.getItem(key)??def}catch{return def}},safeSet=(key,v)=>{try{localStorage.setItem(key,String(v))}catch{}};let soundOn=safeGet('sf_sound','1')==='1',completed=Math.min(Number(safeGet('sf_done','0'))||0,levels.length);let audio=null;function audioContext(){if(!soundOn)return null;try{audio??=new(window.AudioContext||window.webkitAudioContext)();if(audio.state==='suspended')audio.resume();return audio}catch{return null}}
+function tone(freq,dur=.07,vol=.03,when=0,type='sine'){const c=audioContext();if(!c)return;const t=c.currentTime+when,o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.setValueAtTime(freq,t);o.frequency.exponentialRampToValueAtTime(freq*.985,t+dur);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(Math.max(vol,.0002),t+.008);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g).connect(c.destination);o.start(t);o.stop(t+dur+.02)}
+function tick(){tone(570,.043,.014);tone(890,.055,.006,.015)}function failSound(){tone(290,.10,.025);tone(260,.14,.017,.095)}function winSound(){tone(523,.28,.028,0);tone(659,.25,.023,.08);tone(784,.34,.021,.16);tone(1046,.44,.015,.27)}function slashSound(){tone(220,.09,.013);tone(480,.10,.018,.035)}
+function iconPoly(n){let r=n===3?12:n===4?11:12;let pts=[];for(let i=0;i<n;i++){let a=i*TAU/n-PI/2+(n===4?PI/4:0);pts.push(`${15+Math.cos(a)*r},${13+Math.sin(a)*r}`);}return `<svg class="shape-icon" viewBox="0 0 30 26"><polygon points="${pts.join(' ')}" fill="#bce9df66" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round"/></svg>`;}
+function showLevel(i){stage=(i+levels.length)%levels.length;const l=levels[stage];game={a:l.start.a,b:l.start.b,d:l.start.d,preview:false,correct:false,tries:0,selection:null,hint:0,openedAt:0,failShown:false};drag=null;pointers.clear();cam={yaw:.68,pitch:.42};animated=null;lastStamp=-1;
+$('num').textContent=String(stage+1).padStart(3,'0')+' / '+String(levels.length).padStart(3,'0');$('progress').style.width=((stage+1)/levels.length*100)+'%';$('chapter').textContent='CHAPTER '+String(l.chapter).padStart(2,'0')+' · '+(['','想像する','切り出す','空間を読む'][l.chapter]);$('mode').textContent=l.kind==='predict'?'01 — PREDICT':'02 — CREATE';$('title').textContent=l.kind==='predict'?'切ったら、何角形？':titles[l.target]+'を切り出そう';$('subtitle').textContent=l.kind==='predict'?'断面はまだ見えない。切る前に想像しよう。':'面を動かして想像しよう。答えは切った後。';$('solid').textContent=shapes[l.solid].en+' · '+shapes[l.solid].name;$('status').textContent='SECTION HIDDEN';$('scenefoot').textContent=l.kind==='predict'?'↔ 指で立体を回して、断面を想像しよう':l.allowOffset?'↔ 面を回す　·　下で切る位置を変える':'↔ 指で切断面を回そう';$('result').classList.remove('visible');$('controltitle').textContent=l.kind==='predict'?'断面の辺の数を予想':'切断面を動かして形をつくる';$('choices').innerHTML=l.kind==='predict'?[3,4,5,6].map(n=>`<button class="choice" data-edges="${n}" aria-label="${titles[n]}">${iconPoly(n)}<span>${titles[n]}</span></button>`).join(''):'';$('choices').style.display=l.kind==='predict'?'grid':'none';$('offsetrow').style.display=l.allowOffset?'flex':'none';$('offset').value=Math.round(game.d/.115);$('offsetout').textContent=game.d.toFixed(1);$('hint').textContent=l.kind==='predict'?'正解を確かめるのは、切った後。':'切るまでは、断面の形は見えない。';$('hint').className='hint';$('cut').className='cut';$('cut').disabled=l.kind==='predict';$('cutlabel').textContent=l.kind==='predict'?'選んでから CUT':'スパッと切る';$('stamps').innerHTML='';for(let k=0;k<3;k++)$('stamps').innerHTML+='<i></i>';
+Array.from(document.querySelectorAll('.choice')).forEach(btn=>btn.addEventListener('click',()=>{if(game.preview)return;game.selection=Number(btn.dataset.edges);document.querySelectorAll('.choice').forEach(x=>x.classList.toggle('selected',x===btn));$('cut').disabled=false;tick();}));requestDraw();}
+function cut(){if(!game)return;const l=levels[stage];if(game.preview){if(game.correct){if(completed<stage+1){completed=stage+1;safeSet('sf_done',completed);}if(stage+1<levels.length)showLevel(stage+1);else showModal('<h2>MASTER CUTTER</h2><p>40問をクリア。立体と平面の関係が、最初より少し見えるようになったかな？</p><button id="mrestart">最初から遊ぶ</button>');}else{game.preview=false;game.failShown=false;$('result').classList.remove('visible');$('status').textContent='SECTION HIDDEN';$('scenefoot').textContent=l.kind==='predict'?'↔ 指で立体を回して、断面を想像しよう':l.allowOffset?'↔ 面を回す　·　下で切る位置を変える':'↔ 指で切断面を回そう';$('cut').className='cut';$('cutlabel').textContent='もう一度、切る';$('hint').textContent='今の断面を手がかりに、もう一度。';$('hint').className='hint';requestDraw();}return;}
+if(l.kind==='predict'&&!game.selection)return;const n=normal(game.a,game.b),s=shapes[l.solid],shape=slice(s,n,game.d);const ok=l.kind==='predict'?game.selection===shape.count:shape.count===l.target;
+game.preview=true;game.correct=ok;game.tries++;game.openedAt=performance.now();game.lastSlice=shape;game.lastNormal=n;game.lastD=game.d;game.failShown=!ok;
+$('status').textContent=ok?'PERFECT CUT':'CUT RESULT';$('resultname').textContent=titles[shape.count]||'交差なし';drawSectionIcon(shape.pts,n);$('scenefoot').textContent='切断面が現れた。形と辺を確かめよう';$('result').classList.add('visible');$('cut').className='cut '+(ok?'success':'retry');$('cutlabel').textContent=ok?'次の問題へ':'もう一度考える';$('hint').textContent=ok?'その切り方！ 頭の中の形と一致したね。':`今の断面は${titles[shape.count]||'交差なし'}。どう変えればよい？`;$('hint').className='hint '+(ok?'good':'warn');const stamps=$('stamps').children;if(stamps[Math.min(game.tries-1,2)])stamps[Math.min(game.tries-1,2)].className=ok?'on':'failed';slashSound();if(ok){setTimeout(winSound,170);if(completed<stage+1){completed=stage+1;safeSet('sf_done',completed);}}else setTimeout(failSound,180);requestDraw();}
+$('cut').addEventListener('click',cut);$('offset').addEventListener('input',e=>{if(game?.preview)return;game.d=+e.target.value*.115;$('offsetout').textContent=game.d.toFixed(1);requestDraw()});$('offset').addEventListener('change',tick);
+$('sound').addEventListener('click',()=>{soundOn=!soundOn;safeSet('sf_sound',soundOn?'1':'0');updateSound();if(soundOn)tick()});function updateSound(){$('sound').style.opacity=soundOn?'1':'.38';$('sound').title=soundOn?'サウンド ON':'サウンド OFF'}
+$('help').addEventListener('click',()=>{if(!game)return;game.hint++;const l=levels[stage];$('hint').className='hint';if(l.kind==='predict')$('hint').textContent=game.hint%3===1?'平面が横切る立体の「辺」の本数を想像しよう。':game.hint%3===2?'交差した辺を線でつなぐと断面の輪郭になる。':'立体を回し、奥側の辺も確認してみよう。';else $('hint').textContent=game.hint%3===1?'辺を多く横切るほど、断面の角が増える。':game.hint%3===2?'頂点の近くを切ると小さな三角形が生まれやすい。':'面の傾きだけでなく、通過する高さも大切。';tick();});
+function showModal(html){$('modal').innerHTML=html;$('modalwrap').style.display='grid';const btn=$('modal').querySelector('#mrestart');if(btn)btn.onclick=()=>{$('modalwrap').style.display='none';showLevel(0)};}
+$('levels').addEventListener('click',()=>{const max=Math.min(levels.length,Math.max(completed+1,1));showModal(`<div class="tiny">STAGE SELECT</div><h2>どこから切る？</h2><p>クリアしたステージに戻れます。</p><div style="display:grid;grid-template-columns:repeat(5,1fr);gap:7px;text-align:center">${Array.from({length:max},(_,i)=>`<button data-stage="${i}" style="margin:0;padding:10px 0;border-radius:10px;background:${i===stage?'#168f86':'#edf5f2'};color:${i===stage?'white':'#416d69'}">${i+1}</button>`).join('')}</div><button id="mclose" style="background:#edf5f2;color:#668c87">戻る</button>`);$('modal').querySelectorAll('[data-stage]').forEach(el=>el.addEventListener('click',()=>{$('modalwrap').style.display='none';showLevel(+el.dataset.stage)}));$('mclose').onclick=()=>$('modalwrap').style.display='none';});$('modalwrap').addEventListener('click',e=>{if(e.target===$('modalwrap'))$('modalwrap').style.display='none'});
+function pointerDown(e){if(game.preview)return;canvas.setPointerCapture(e.pointerId);pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});drag={x:e.clientX,y:e.clientY,a:game.a,b:game.b,cy:cam.yaw,cp:cam.pitch,stamp:0};audioContext();}
+function pointerMove(e){if(!pointers.has(e.pointerId)||!drag||game.preview)return;const l=levels[stage];let dx=e.clientX-drag.x,dy=e.clientY-drag.y;pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(l.kind==='predict'||pointers.size>1){cam.yaw=drag.cy+dx*.009;cam.pitch=Math.max(-.05,Math.min(1.15,drag.cp+dy*.007));}else{const old=Math.round(game.a/15)+'|'+Math.round(game.b/15);game.a=Math.max(-78,Math.min(78,drag.a+dx*.32));game.b=Math.max(-78,Math.min(78,drag.b-dy*.32));const mark=Math.round(game.a/15)+'|'+Math.round(game.b/15);if(mark!==old&&performance.now()-(drag.stamp||0)>64){drag.stamp=performance.now();tone(600,.036,.009)}}requestDraw();}
+function pointerUp(e){if(!pointers.has(e.pointerId))return;pointers.delete(e.pointerId);if(!game.preview&&levels[stage].kind==='make'&&pointers.size===0&&drag){const sa=Math.round(game.a/15)*15,sb=Math.round(game.b/15)*15;animated={fromA:game.a,fromB:game.b,toA:Math.max(-75,Math.min(75,sa)),toB:Math.max(-75,Math.min(75,sb)),at:performance.now(),ms:185};tick();}drag=null;requestDraw();}
+canvas.addEventListener('pointerdown',pointerDown);canvas.addEventListener('pointermove',pointerMove);canvas.addEventListener('pointerup',pointerUp);canvas.addEventListener('pointercancel',pointerUp);
+function resize(){const r=canvas.getBoundingClientRect();dpr=Math.min(devicePixelRatio||1,2.5);width=Math.max(1,r.width);height=Math.max(1,r.height);canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);requestDraw();}let dirty=true;function requestDraw(){dirty=true;}
+function project(p){let cy=Math.cos(cam.yaw),sy=Math.sin(cam.yaw),ce=Math.cos(cam.pitch),se=Math.sin(cam.pitch);let xx=p[0]*cy-p[1]*sy,yy=p[0]*sy+p[1]*cy;const scale=Math.min(width*.295,height*.237,151);return [width/2+xx*scale,height*.485+(-p[2]*ce+yy*se)*scale,yy*ce+p[2]*se];}
+function path3(poly){if(!poly.length)return;const a=project(poly[0]);ctx.beginPath();ctx.moveTo(a[0],a[1]);for(let i=1;i<poly.length;i++){const p=project(poly[i]);ctx.lineTo(p[0],p[1]);}ctx.closePath();}
+function strokePoly(poly,color='#7daba6',lw=1.7){if(poly.length<2)return;path3(poly);ctx.lineWidth=lw;ctx.strokeStyle=color;ctx.lineJoin='round';ctx.stroke();}
+function clipFace(pts,n,d,sign){let out=[];for(let i=0;i<pts.length;i++){let a=pts[i],b=pts[(i+1)%pts.length],fa=(dot(n,a)-d)*sign,fb=(dot(n,b)-d)*sign,ia=fa>=-1e-7,ib=fb>=-1e-7;if(ia&&ib)out.push(b);else if(ia&&!ib)out.push(add(a,mul(sub(b,a),fa/(fa-fb))));else if(!ia&&ib){out.push(add(a,mul(sub(b,a),fa/(fa-fb))));out.push(b);}}return out;}
+function drawFaces(shape,part,n,d,sep){const mv=n?mul(n,part*sep):[0,0,0];const polys=[];for(const f of shape.f){let p=f.map(i=>shape.v[i]);if(n)p=clipFace(p,n,d,part);if(p.length<3)continue;p=p.map(v=>add(v,mv));const depth=p.reduce((s,v)=>s+project(v)[2],0)/p.length;polys.push({p,depth});}polys.sort((a,b)=>a.depth-b.depth);for(const [i,obj] of polys.entries()){path3(obj.p);let light=.055+i*.012;ctx.fillStyle=`rgba(103,194,181,${light})`;ctx.fill();ctx.strokeStyle='rgba(116,160,158,.67)';ctx.lineWidth=1.4;ctx.stroke();}}
+function planePoly(n,d,s=1.78){const [u,v]=basis(n),c=mul(n,d),poly=[];for(let i=0;i<48;i++){const th=i*TAU/48;poly.push(add(c,add(mul(u,Math.cos(th)*s),mul(v,Math.sin(th)*s))));}return poly;}
+function drawPlane(n,d,fade=1){const q=planePoly(n,d,1.68);ctx.save();ctx.globalAlpha=fade;path3(q);ctx.fillStyle='rgba(54,192,171,.125)';ctx.fill();ctx.lineWidth=1.3;ctx.strokeStyle='rgba(57,173,162,.75)';ctx.stroke();const base=mul(n,d),[u,v]=basis(n);for(let i=-1;i<=1;i++){const p=add(base,mul(u,i*.68)),q1=add(base,mul(v,i*.68));const x1=add(p,mul(v,-1.8)),x2=add(p,mul(v,1.8)),y1=add(q1,mul(u,-1.8)),y2=add(q1,mul(u,1.8));ctx.beginPath();let s1=project(x1),s2=project(x2);ctx.moveTo(s1[0],s1[1]);ctx.lineTo(s2[0],s2[1]);ctx.strokeStyle='rgba(52,179,159,.11)';ctx.lineWidth=.7;ctx.stroke();}ctx.restore()}
+function drawSectionIcon(pts,n){const cn=$('section2d'),c=cn.getContext('2d');if(!c)return;c.clearRect(0,0,cn.width,cn.height);if(pts.length<3)return;const [u,v]=basis(n),vs=pts.map(p=>[dot(p,u),dot(p,v)]),cx=vs.reduce((x,p)=>x+p[0],0)/vs.length,cy=vs.reduce((x,p)=>x+p[1],0)/vs.length,xs=vs.map(p=>p[0]-cx),ys=vs.map(p=>p[1]-cy),r=Math.max(Math.max(...xs)-Math.min(...xs),Math.max(...ys)-Math.min(...ys),.1),sc=102/r;c.save();c.translate(cn.width/2,cn.height/2);c.scale(sc,-sc);c.beginPath();c.moveTo(xs[0],ys[0]);for(let i=1;i<vs.length;i++)c.lineTo(xs[i],ys[i]);c.closePath();c.fillStyle='#b6eae1';c.strokeStyle='#0c9589';c.lineWidth=2.6/sc;c.lineJoin='round';c.fill();c.stroke();for(let i=0;i<vs.length;i++){c.beginPath();c.arc(xs[i],ys[i],2.8/sc,0,TAU);c.fillStyle='#0d9c90';c.fill();}c.restore();}
+function drawCap(pts,n,sep,side,primary){if(pts.length<3)return;let poly=pts.map(p=>add(p,mul(n,sep*side)));path3(poly);ctx.save();ctx.shadowBlur=primary?17:7;ctx.shadowColor='rgba(32,186,170,.22)';ctx.fillStyle=primary?'rgba(63,203,181,.63)':'rgba(28,173,158,.25)';ctx.fill();ctx.shadowBlur=0;ctx.strokeStyle=primary?'#078e85':'rgba(16,146,133,.55)';ctx.lineWidth=primary?3:1.6;ctx.lineJoin='round';ctx.stroke();for(const v of poly){let p=project(v);ctx.beginPath();ctx.arc(p[0],p[1],primary?3.2:2.4,0,TAU);ctx.fillStyle='#f6fffc';ctx.fill();ctx.strokeStyle='#14a697';ctx.lineWidth=1.2;ctx.stroke();}ctx.restore();}
+function drawAmbient(){ctx.save();const g=ctx.createRadialGradient(width/2,height*.76,1,width/2,height*.76,width*.4);g.addColorStop(0,'rgba(43,112,100,.095)');g.addColorStop(1,'rgba(43,112,100,0)');ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(width/2,height*.76,width*.37,height*.065,0,0,TAU);ctx.fill();ctx.restore()}
+let loopTime=0;function draw(t){requestAnimationFrame(draw);if(!width||!height||!game)return;if(animated){const q=Math.min(1,(t-animated.at)/animated.ms),ease=1-Math.pow(1-q,3);game.a=animated.fromA+(animated.toA-animated.fromA)*ease;game.b=animated.fromB+(animated.toB-animated.fromB)*ease;if(q>=1)animated=null;dirty=true;}if(game.preview&&t-game.openedAt<720)dirty=true;if(!dirty)return;dirty=false;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,width,height);const l=levels[stage],s=shapes[l.solid],n=normal(game.a,game.b);drawAmbient();if(!game.preview){drawPlane(n,game.d);drawFaces(s,0);ctx.save();const c=project(mul(n,game.d));ctx.beginPath();ctx.arc(c[0],c[1],3,0,TAU);ctx.fillStyle='#0ba394';ctx.fill();ctx.restore();}else{let q=Math.min(1,(t-game.openedAt)/620),ease=1-Math.pow(1-q,3),sep=.4*ease;let cutN=game.lastNormal,cutD=game.lastD;drawPlane(cutN,cutD,.20*(1-ease));drawFaces(s,-1,cutN,cutD,sep);drawFaces(s,1,cutN,cutD,sep);drawCap(game.lastSlice.pts,cutN,sep,-1,false);drawCap(game.lastSlice.pts,cutN,sep,1,true);}}
+function start(){updateSound();showLevel(Math.min(completed,levels.length-1));resize();new ResizeObserver(resize).observe(canvas);requestAnimationFrame(draw);}start();
+window.__SLICE_FLOW={shapes,levels,normal,slice,showLevel,get game(){return game},get stage(){return stage},cut};
 })();
-</script>
-</body>
-</html>
+</script></body></html>
