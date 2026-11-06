@@ -1,91 +1,498 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover"><meta name="theme-color" content="#f7faf9">
-<title>SLICE FLOW — ACORN PLAY LAB</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#f7f9f8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>SLICE FLOW — 指先で、立体を切る。</title>
 <style>
-:root{--bg:#f7faf9;--ink:#233943;--muted:#82949b;--cyan:#05adbc;--line:#dce8e8;--white:#fff}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;overscroll-behavior:none}body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;color:var(--ink);background:var(--bg);user-select:none;-webkit-user-select:none;overflow:hidden}
-.app{height:100vh;height:100dvh;max-width:560px;margin:0 auto;display:flex;flex-direction:column;padding:env(safe-area-inset-top) 18px env(safe-area-inset-bottom)}
-header{flex:0 0 auto;padding:18px 5px 0}.mast{display:flex;justify-content:space-between;align-items:center}.brand{font-size:10px;letter-spacing:.27em;font-weight:700;color:#8ba0a7}.brand i{display:inline-block;width:7px;height:7px;background:var(--cyan);border-radius:50%;margin-right:8px}.tools{display:flex;gap:8px}.iconbtn{width:37px;height:37px;border:1px solid #dfe9e9;border-radius:50%;background:#ffffffa8;color:#6b858d;display:grid;place-items:center;cursor:pointer;transition:transform .15s,background .15s}.iconbtn:active{transform:scale(.91);background:#e7f5f4}.iconbtn svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-.titleline{display:flex;align-items:baseline;justify-content:space-between;margin-top:13px}h1{font-family:ui-rounded,-apple-system,sans-serif;font-size:clamp(25px,6.8vw,34px);font-weight:760;letter-spacing:-.055em;line-height:1;margin:0}h1 span{color:var(--cyan)}.level{font:600 13px ui-monospace,SFMono-Regular,monospace;letter-spacing:.06em;color:#7f999f}.level b{font-size:18px;color:var(--ink);font-weight:650}.tag{font-size:12px;color:#80949b;letter-spacing:.05em;margin:9px 1px 0}.progress{display:flex;gap:4px;margin-top:16px}.progress span{height:2px;background:#deebeb;border-radius:2px;flex:1;transition:background .3s}.progress span.done{background:var(--cyan)}
-.hero{min-height:180px;flex:1;position:relative;margin-top:0;overflow:hidden;touch-action:none}.hero canvas{width:100%;height:100%;display:block;touch-action:none;cursor:ns-resize}.instruction{position:absolute;bottom:9px;left:0;right:0;text-align:center;color:#94a5aa;letter-spacing:.10em;font-size:11px;pointer-events:none;transition:opacity .4s}.instruction b{font-weight:500;color:#71929b}.instruction.hidden{opacity:0}
-.previews{height:clamp(120px,21dvh,170px);flex:0 0 auto;display:grid;grid-template-columns:1fr 1fr;gap:11px}.shape-panel{border:1px solid #e0eae9;border-radius:18px;background:#ffffffbc;overflow:hidden;position:relative;box-shadow:0 6px 20px rgba(34,65,69,.025)}.shape-panel .panel-title{font-family:ui-monospace,SFMono-Regular,monospace;letter-spacing:.16em;font-size:10px;color:#91a4ab;position:absolute;left:16px;top:13px}.shape-panel.goal{background:#f0f7f6;border-color:#d8e9e7}.shape-panel.goal .panel-title{color:#63a1a6}.shape-panel canvas{position:absolute;inset:22px 6px 5px;width:calc(100% - 12px);height:calc(100% - 27px)}
-.footer{flex:0 0 auto;height:clamp(86px,14dvh,112px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}.tip{text-align:center;color:#98a9ae;font-size:11px;letter-spacing:.045em;min-height:16px}.bottomrow{display:flex;align-items:center;justify-content:center;gap:10px}.pill{border:1px solid #dfeae9;background:white;color:#8ba0a6;border-radius:100px;padding:8px 16px;font-size:11px;letter-spacing:.09em}.pill.cyan{color:#119ead;background:#eff9f8;border-color:#c8ebeb}.footer small{font-size:10px;color:#b1c0c2;letter-spacing:.12em}
-.complete{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;background:rgba(247,250,249,.76);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity .32s}.complete.show{opacity:1;pointer-events:auto}.finish-card{text-align:center;transform:translateY(10px) scale(.96);transition:transform .45s cubic-bezier(.18,1.35,.35,1)}.complete.show .finish-card{transform:translateY(0) scale(1)}.finish-ring{width:79px;height:79px;border-radius:50%;background:#e1f8f4;border:1px solid #bde7e4;margin:0 auto 20px;display:grid;place-items:center;color:#04a9b6}.finish-ring svg{width:36px;height:36px;stroke:currentColor;stroke-width:1.6;fill:none;stroke-linecap:round}.complete h2{font-size:27px;letter-spacing:.06em;font-weight:650;margin:0 0 9px}.complete p{color:#80979d;font-size:13px;letter-spacing:.04em;margin:0 0 24px}.next{border:0;border-radius:100px;color:white;background:#10acb9;font-weight:650;font-size:14px;letter-spacing:.13em;padding:15px 39px;box-shadow:0 10px 22px rgba(9,176,188,.19);cursor:pointer}.next:active{transform:scale(.97)}
-@media(max-height:710px){header{padding-top:9px}.titleline{margin-top:6px}.progress{margin-top:10px}.footer{height:77px}.hero{min-height:150px}.previews{height:119px}.tag{margin-top:5px}}
-@media(prefers-reduced-motion:reduce){.complete,.finish-card,.progress span{transition:none}}
+:root{
+ --ink:#173c43;--text:#294a4d;--mute:#8ba2a0;--mint:#078f87;--mint2:#37c6b2;
+ --gold:#d69b63;--goldlite:#f7ebe1;--line:#dae9e5;--paper:#f7f9f8;
+ --ease:cubic-bezier(.2,.85,.25,1);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;min-height:100%;background:var(--paper);color:var(--ink);overscroll-behavior:none}
+body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;-webkit-font-smoothing:antialiased}
+button{font:inherit;touch-action:manipulation;cursor:pointer}
+button:focus-visible{outline:2px solid #2aaea2;outline-offset:3px}
+button[disabled]{cursor:default;opacity:.30}
+svg{width:19px;height:19px;display:block;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+button svg{pointer-events:none}
+.app{width:min(100%,520px);min-height:100svh;min-height:100dvh;margin:auto;padding:calc(env(safe-area-inset-top) + 11px) 19px calc(env(safe-area-inset-bottom) + 12px);display:flex;flex-direction:column;gap:10px}
+.header{display:flex;align-items:center;justify-content:space-between;min-height:42px;flex:0 0 auto}
+.wordmark{font-family:-apple-system,BlinkMacSystemFont,Arial,sans-serif;font-size:18px;letter-spacing:.135em;font-weight:850;white-space:nowrap;line-height:1}.wordmark span{color:var(--mint)}
+.top-actions{display:flex;gap:4px}.round-btn{background:transparent;border:none;color:#6c8b8b;height:39px;width:39px;border-radius:14px;display:grid;place-items:center;transition:background .15s,color .15s,transform .15s}
+.round-btn:active{background:#e8f2f0;transform:scale(.92)}
+.stage-head{flex:0 0 auto;padding:3px 2px 0}
+.eyebrow{display:flex;align-items:center;justify-content:space-between;font-size:10px;font-weight:800;letter-spacing:.15em;color:#7b9a98}
+.eyebrow .num{letter-spacing:.09em;font-variant-numeric:tabular-nums;font-size:12px;color:#557e7c}
+.track{margin-top:8px;width:100%;height:3px;border-radius:3px;background:#e3eae8;overflow:hidden}
+.track i{display:block;width:1%;height:100%;background:linear-gradient(90deg,#7dd7c8,#07988d);border-radius:4px;transition:width .35s ease}
+.prompt{margin:11px 0 0;display:flex;align-items:center;justify-content:center;gap:8px;font-size:18px;font-weight:820;letter-spacing:.04em;line-height:1.3;text-align:center}
+.prompt .tiny-star{width:7px;height:7px;border:1.5px solid #b3c8c2;transform:rotate(45deg);border-radius:2px;flex-shrink:0}
+.subprompt{text-align:center;color:#92a7a5;font-size:11px;font-weight:580;letter-spacing:.025em;margin-top:5px;min-height:13px}
+.arena{position:relative;flex:1 1 auto;min-height:270px;max-height:520px;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;background:radial-gradient(ellipse 90% 75% at 48% 43%,#fff 0%,#fcfefd 45%,#f1f8f6 100%);border-radius:28px;border:1px solid #e1ebe8;box-shadow:0 19px 52px rgba(31,75,72,.075),inset 0 1px 0 #fff;overflow:hidden;isolation:isolate;transform:translateZ(0)}
+.arena.grabbing{cursor:grabbing}
+.arena:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.45;background-image:radial-gradient(circle,#c6dcd7 0.65px,transparent .8px);background-size:25px 25px;mask-image:linear-gradient(to bottom,transparent 10%,#000 90%);-webkit-mask-image:linear-gradient(to bottom,transparent 10%,#000 90%)}
+#scene{position:absolute;width:100%;height:100%;inset:0;display:block;touch-action:none}
+.arena-tag{position:absolute;left:17px;top:17px;display:flex;align-items:center;gap:7px;font-size:11px;font-weight:740;color:#688985;pointer-events:none;letter-spacing:.015em}
+.arena-tag .tag-dot{width:7px;height:7px;border-radius:50%;border:2px solid #47bcae;background:#fff;box-shadow:0 0 0 3px #dff6ed}
+.live-angles{position:absolute;right:18px;top:17px;display:flex;align-items:center;gap:5px;font-size:11px;font-family:ui-monospace,"SFMono-Regular",Menlo,monospace;font-weight:700;letter-spacing:.025em;color:#588e8a;pointer-events:none;font-variant-numeric:tabular-nums}
+.live-angles .angle-sep{color:#c7dcd6}
+.action-guide{position:absolute;bottom:15px;left:0;right:0;pointer-events:none;text-align:center;color:#90aaa4;font-size:11px;font-weight:680;letter-spacing:.035em;transition:opacity .35s}
+.action-guide.off{opacity:0}
+.gesture-icon{display:inline-block;color:#4eaaa1;margin-right:7px;font-size:16px;vertical-align:-1px}
+.magnet-pip{position:absolute;top:50%;left:50%;width:62px;height:62px;border-radius:50%;border:1.4px solid rgba(35,167,147,.28);transform:translate(-50%,-50%) scale(.4);opacity:0;pointer-events:none}
+.magnet-pip.pop{animation:ping .34s ease-out}
+@keyframes ping{0%{opacity:.75;transform:translate(-50%,-50%) scale(.7)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.6)}}
+.pos-control{position:absolute;right:3px;top:58px;bottom:47px;width:55px;display:none;flex-direction:column;align-items:center;justify-content:center;gap:6px;touch-action:none;cursor:ns-resize}
+.pos-rail{height:min(51%,178px);min-height:125px;position:relative;width:42px;display:flex;align-items:center;justify-content:center}
+.pos-rail:before{content:"";position:absolute;top:12px;bottom:12px;width:2px;background:#d1e4de;border-radius:4px}
+.pos-dot{position:absolute;left:50%;width:6px;height:6px;background:#b9d4cc;border-radius:50%;transform:translate(-50%,-50%)}.pos-dot.d0{top:12px}.pos-dot.d1{top:50%}.pos-dot.d2{top:calc(100% - 12px)}
+.pos-grip{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);height:30px;width:30px;background:#fff;border-radius:50%;border:2.5px solid #199b90;box-shadow:0 5px 13px #268a7c2a,0 1px 2px #267c7133;transition:box-shadow .18s}
+.pos-control.dragging .pos-grip{box-shadow:0 0 0 7px #16b39b14,0 5px 15px #268a7c42}
+.pos-title{font-size:9px;color:#81a4a0;font-weight:800;white-space:nowrap}
+.feedback{position:relative;flex:0 0 auto;display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.specimen{display:flex;align-items:center;gap:5px;min-width:0;min-height:108px;border:1px solid #e4ebe8;background:#fff;border-radius:20px;padding:11px 8px 10px 14px;box-shadow:0 3px 12px #183b3b06}
+.specimen.target{background:#fdfaf7;border-color:#f0e7dd}.specimen.current{border-color:#d7eae6;background:linear-gradient(122deg,#f6fcfa,#fff)}
+.specimen-label{flex:0 0 45%;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:5px}
+.specimen-label small{font-size:10px;font-weight:900;letter-spacing:.115em;color:#bd906d;white-space:nowrap}.specimen.current small{color:#239d91}
+.specimen-label strong{font-size:12px;line-height:1.4;font-weight:830;white-space:nowrap;color:#5f6964}.specimen.current strong{color:#2a8f83}
+.specimen-label em{font-size:10px;font-weight:690;color:#9da8a3;font-style:normal;min-height:12px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.specimen canvas{min-width:0;flex:1;width:55%;height:82px;display:block}
+.bottom-actions{min-height:48px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex:0 0 auto}
+.soft-button{border:1px solid #dfeae6;background:#fff;border-radius:14px;color:#678681;padding:12px 15px;font-size:12px;font-weight:780;letter-spacing:.025em;white-space:nowrap;display:flex;align-items:center;gap:6px;min-height:45px;transition:transform .12s,background .12s}
+.soft-button:active{transform:scale(.97);background:#f0f7f5}.soft-button svg{height:15px;width:15px}
+.help-text{font-size:10px;line-height:1.4;color:#98a9a5;text-align:center;flex:1;min-width:0}
+.next-button{border:0;border-radius:14px;background:var(--mint);box-shadow:0 7px 18px #0f968728;color:#fff;font-size:13px;font-weight:810;padding:13px 16px;min-height:45px;display:none;gap:6px;align-items:center;justify-content:center;white-space:nowrap;letter-spacing:.04em}
+.next-button:active{transform:scale(.98)}
+.bottom-note{text-align:center;color:#a9bab5;font-size:9px;letter-spacing:.03em;line-height:1.2;flex:0 0 auto}
+.success-shine{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 48% 50%,#64d2bf30 0%,transparent 60%);opacity:0}
+.success-shine.show{animation:shine .95s ease-out both}
+@keyframes shine{0%{opacity:0}18%{opacity:1}100%{opacity:0}}
+.success{position:absolute;left:50%;bottom:47px;transform:translate(-50%,18px) scale(.94);opacity:0;z-index:5;pointer-events:none;display:flex;align-items:center;gap:10px;border-radius:16px;background:rgba(255,255,255,.94);border:1px solid rgba(161,220,207,.8);padding:11px 17px 11px 13px;box-shadow:0 13px 38px #197e7124,0 2px 6px #137e6b12;backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px);transition:opacity .26s,transform .43s var(--ease);white-space:nowrap}
+.success.show{opacity:1;transform:translate(-50%,0) scale(1)}
+.success-mark{width:28px;height:28px;background:var(--mint);color:#fff;border-radius:50%;display:grid;place-items:center}.success-mark svg{width:16px;height:16px;stroke-width:2.5}
+.success strong{font-size:16px;color:#167f75;font-weight:850;letter-spacing:.035em}.success small{font-size:10px;color:#93a6a0;font-weight:670}
+.lesson-dots{display:flex;gap:5px;justify-content:center;margin-top:5px}.lesson-dots span{width:4px;height:4px;background:#dae9e3;border-radius:50%}.lesson-dots span.active{background:#35afa1;width:13px}
+.sheet{position:fixed;inset:0;background:#173f4454;display:none;align-items:flex-end;justify-content:center;z-index:20;padding-top:40px;backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
+.sheet.open{display:flex}.sheet-inner{background:#fff;border-radius:27px 27px 0 0;padding:19px 20px calc(26px + env(safe-area-inset-bottom));width:min(100%,520px);max-height:min(83dvh,770px);display:flex;flex-direction:column;gap:12px;box-shadow:0 -18px 60px #112a2b29}
+.sheet-head{display:flex;justify-content:space-between;align-items:center}.sheet h2{font-size:18px;letter-spacing:.03em;margin:0}.sheet-sub{margin:0;font-size:11px;color:#92a6a2}
+.level-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px;overflow:auto;padding:4px 0 15px;overscroll-behavior:contain}
+.level-grid button{aspect-ratio:1/1;border:1px solid #e4ede9;background:#f7f9f8;border-radius:10px;font-size:12px;font-weight:750;color:#698681}
+.level-grid button.current-level{background:#dcf4ed;border-color:#8bcebd;color:#087d71}.level-grid button.done-level{background:#fff;border-color:#b6ded4;color:#18998a}
+.level-grid button.locked{color:#c6d3cd;opacity:.6}
+@media(max-width:390px){.app{padding-left:13px;padding-right:13px;gap:8px}.specimen{padding-left:10px;min-height:101px}.specimen-label{flex-basis:44%}.specimen-label strong{font-size:11px}.specimen canvas{height:76px}.arena{min-height:240px}.prompt{font-size:17px}.soft-button{padding:11px 12px}}
+@media(max-height:770px){.app{gap:7px}.stage-head{padding-top:0}.prompt{margin-top:7px}.arena{min-height:210px}.feedback .specimen{min-height:92px;padding-top:6px;padding-bottom:6px}.specimen canvas{height:75px}.bottom-note{display:none}}
+@media(max-height:640px){.arena{min-height:185px}.subprompt{margin-top:2px}.specimen{min-height:82px!important}.specimen canvas{height:65px!important}.bottom-actions{min-height:42px}.soft-button,.next-button{min-height:40px;padding-block:9px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
 </style>
 </head>
-<body><div class="app">
-<header><div class="mast"><div class="brand"><i></i>ACORN PLAY LAB / 01</div><div class="tools">
-<button class="iconbtn" id="reset" aria-label="ステージをやり直す" title="やり直す"><svg viewBox="0 0 24 24"><path d="M4.5 10A8 8 0 1 1 5.9 17.8"/><path d="M4 4.5V10h5.5"/></svg></button>
-<button class="iconbtn" id="sound" aria-label="音のオンオフ" title="サウンド"><svg viewBox="0 0 24 24" id="soundsvg"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="M17 9a4 4 0 0 1 0 6M19 6a8 8 0 0 1 0 12"/></svg></button>
-</div></div><div class="titleline"><h1>SLICE <span>FLOW</span></h1><div class="level"><b id="level">01</b> / 08</div></div><p class="tag" id="stageTitle">きれいな断面を みつけよう</p><div class="progress" id="progress"></div></header>
-<div class="hero" id="hero"><canvas id="scene" aria-label="立体を指で上下に動かして切断面を変える"></canvas><div class="instruction" id="instruction">↑　<b>ゆびで 上下にスライド</b>　↓</div><div class="complete" id="complete"><div class="finish-card"><div class="finish-ring"><svg viewBox="0 0 48 48"><path d="m13 24 8 8 15-17"/></svg></div><h2 id="finishTitle">みつけた！</h2><p id="finishNote">ぴったり かさなった</p><button class="next" id="next">つぎの かたち →</button></div></div></div>
-<div class="previews"><div class="shape-panel"><div class="panel-title">NOW · いま</div><canvas id="now"></canvas></div><div class="shape-panel goal"><div class="panel-title">GOAL · おてほん</div><canvas id="goal"></canvas></div></div>
-<div class="footer"><div class="tip" id="tip">動かすと、かたちが変わるよ</div><div class="bottomrow"><span class="pill" id="name">01 / PYRAMID</span><span class="pill cyan">DRAG TO SLICE</span></div><small>MADE FOR CURIOUS FINGERS</small></div>
-</div><script>
+<body>
+<main class="app">
+  <header class="header">
+   <div class="wordmark" aria-label="SLICE FLOW">SLICE <span>FLOW</span></div>
+   <nav class="top-actions" aria-label="ゲームメニュー">
+    <button class="round-btn" id="prev" title="前の問題" aria-label="前の問題"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
+    <button class="round-btn" id="levels" title="ステージ一覧" aria-label="ステージ一覧"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.2"/><rect x="14" y="3" width="7" height="7" rx="1.2"/><rect x="3" y="14" width="7" height="7" rx="1.2"/><rect x="14" y="14" width="7" height="7" rx="1.2"/></svg></button>
+    <button class="round-btn" id="sound" title="音のオン・オフ" aria-label="音をオフにする"><svg id="soundIcon" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18 5a10 10 0 0 1 0 14"/></svg></button>
+   </nav>
+  </header>
+  <section class="stage-head" aria-label="ステージ情報">
+   <div class="eyebrow"><span id="chapter">CHAPTER 01 · 傾ける</span><span class="num" id="stageCount">001 / 100</span></div>
+   <div class="track"><i id="progressFill"></i></div>
+   <h1 class="prompt"><i class="tiny-star"></i><span id="prompt">この断面をつくろう</span><i class="tiny-star"></i></h1>
+   <div class="subprompt" id="subprompt">指でなぞって、切る面を動かす</div>
+  </section>
+  <div class="arena" id="viewport" aria-label="3D切断面。指を上下になぞると傾きが変わります。">
+    <canvas id="scene"></canvas>
+    <div class="arena-tag"><i class="tag-dot"></i><span id="solidName">四角すい</span></div>
+    <div class="live-angles"><span id="tiltLabel">0°</span><span class="angle-sep" id="angleSep" hidden>·</span><span id="yawLabel" hidden>0°</span></div>
+    <div class="action-guide" id="dragInstruction"><span class="gesture-icon">↕</span>上へなぞって、面を傾ける</div>
+    <div class="magnet-pip" id="pip"></div>
+    <div class="pos-control" id="posControl" aria-label="切る位置" role="slider" tabindex="0" aria-valuemin="-1" aria-valuemax="1" aria-valuenow="0">
+      <div class="pos-rail" id="posRail"><i class="pos-dot d0"></i><i class="pos-dot d1"></i><i class="pos-dot d2"></i><i class="pos-grip" id="posKnob"></i></div><span class="pos-title">切る位置</span>
+    </div>
+    <div class="success-shine" id="shine"></div>
+    <div class="success" id="success" aria-live="polite"><span class="success-mark"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg></span><div><strong>ぴったり！</strong><div><small id="winDetail">断面が重なった</small></div></div></div>
+  </div>
+  <div class="feedback" aria-label="断面の比較">
+    <div class="specimen target"><div class="specimen-label"><small>GOAL</small><strong>めざす断面</strong><em id="goalEdges">目標</em></div><canvas id="goalCanvas" aria-label="目標の断面"></canvas></div>
+    <div class="specimen current"><div class="specimen-label"><small>YOUR CUT</small><strong>いまの断面</strong><em id="nowEdges">いまの形</em></div><canvas id="nowCanvas" aria-label="現在の断面"></canvas></div>
+  </div>
+  <div class="bottom-actions">
+    <button class="soft-button" id="hint"><svg viewBox="0 0 24 24"><path d="M9 18h6m-5-4h4m-4 7h4M8 15c-1.5-1.3-2.5-3-2.5-5A6.5 6.5 0 0 1 12 3.5 6.5 6.5 0 0 1 18.5 10c0 2-1 3.7-2.5 5L15 17H9l-1-2Z"/></svg>ヒント</button>
+    <div class="help-text" id="status">指を離すと、角度がカチッと揃う</div>
+    <button class="soft-button" id="reset" title="切断面を最初に戻す" aria-label="切断面を元に戻す"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button>
+    <button class="next-button" id="next">次の問題 <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
+  </div>
+  <div class="bottom-note">音・ヒント・進み具合はいつでも調整できます</div>
+</main>
+<div class="sheet" id="levelSheet" aria-hidden="true" role="dialog" aria-label="ステージ一覧">
+ <div class="sheet-inner"><div class="sheet-head"><h2>ステージを選ぶ</h2><button class="round-btn" id="closeLevels" aria-label="閉じる"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div><p class="sheet-sub">クリアしたところまで、いつでも戻れます。</p><div class="level-grid" id="levelGrid"></div></div>
+</div>
+<script>
+
 (()=>{'use strict';
-const storage={getItem(key){try{return window.localStorage.getItem(key)}catch(e){return null}},setItem(key,val){try{window.localStorage.setItem(key,val)}catch(e){}}};
-const $=id=>document.getElementById(id),scene=$('scene'),now=$('now'),goal=$('goal'),hero=$('hero');
-const ctx=scene.getContext('2d'),nx=now.getContext('2d'),gx=goal.getContext('2d');const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
-const vadd=(a,b)=>a.map((v,i)=>v+b[i]),vmul=(a,s)=>a.map(v=>v*s),sub=(a,b)=>a.map((v,i)=>v-b[i]),dot=(a,b)=>a.reduce((n,v,i)=>n+v*b[i],0),cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]],norm=a=>vmul(a,1/(Math.hypot(...a)||1));
-function poly(pts,faces){return{pts,faces,edges:[...new Set(faces.flatMap(f=>f.map((v,i)=>[v,f[(i+1)%f.length]].sort((a,b)=>a-b).join(','))))].map(e=>e.split(',').map(Number))}}
-const pyramid=(s=1.18,h=1.38)=>poly([[-s,-1.25,-s],[s,-1.25,-s],[s,-1.25,s],[-s,-1.25,s],[0,h,0]],[[0,3,2,1],[0,1,4],[1,2,4],[2,3,4],[3,0,4]]);
-const tetra=()=>poly([[-1.32,-1.2,-.95],[1.32,-1.2,-.95],[0,-1.2,1.40],[0,1.4,0]],[[0,2,1],[0,1,3],[1,2,3],[2,0,3]]);
-const octa=()=>poly([[1.3,0,0],[-1.3,0,0],[0,1.55,0],[0,-1.55,0],[0,0,1.3],[0,0,-1.3]],[[0,2,4],[4,2,1],[1,2,5],[5,2,0],[4,3,0],[1,3,4],[5,3,1],[0,3,5]]);
-const cube=(x=1.16,y=1.16,z=1.16)=>poly([[-x,-y,-z],[x,-y,-z],[x,y,-z],[-x,y,-z],[-x,-y,z],[x,-y,z],[x,y,z],[-x,y,z]],[[0,3,2,1],[4,5,6,7],[0,1,5,4],[3,7,6,2],[1,2,6,5],[0,4,7,3]]);
-const wedge=()=>poly([[-1.2,-1.2,-1.15],[1.2,-1.2,-1.15],[1.2,-1.2,1.15],[-1.2,-1.2,1.15],[-1.2,1.4,0],[1.2,1.4,0]],[[0,3,2,1],[0,1,5,4],[2,3,4,5],[0,4,3],[1,2,5]]);
-function prism(n=6,rad=1.25){let pts=[],faces=[];for(let y of [-1.2,1.2])for(let i=0;i<n;i++){let a=2*Math.PI*i/n;pts.push([Math.cos(a)*rad,y,Math.sin(a)*rad]);}faces.push([...Array(n)].map((_,i)=>n-1-i));faces.push([...Array(n)].map((_,i)=>n+i));for(let i=0;i<n;i++)faces.push([i,(i+1)%n,n+(i+1)%n,n+i]);return poly(pts,faces)}
-function hexPyramid(){let pts=[],faces=[],n=6;for(let i=0;i<n;i++){let a=2*Math.PI*i/n;pts.push([1.34*Math.cos(a),-1.25,1.34*Math.sin(a)])}pts.push([0,1.5,0]);faces.push([5,4,3,2,1,0]);for(let i=0;i<n;i++)faces.push([i,(i+1)%n,6]);return poly(pts,faces)}
-const levels=[
-{name:'PYRAMID',caption:'まずは、ゆっくり うごかそう',p:pyramid(),n:[0,1,0],f:.55,initial:.23},
-{name:'TETRA',caption:'ちいさな 三角形を みつけよう',p:tetra(),n:[0,1,0],f:.69,initial:.27},
-{name:'DIAMOND',caption:'かたちが ひろがって、ちぢむ',p:octa(),n:[0,1,0],f:.72,initial:.18},
-{name:'ROOF',caption:'細長い かたちへ',p:wedge(),n:[0,1,0],f:.79,initial:.24},
-{name:'TILTED CUBE',caption:'ななめに 切ると…？',p:cube(),n:[.72,.65,.19],f:.60,initial:.20},
-{name:'HEX PYRAMID',caption:'6つの かどを よくみて',p:hexPyramid(),n:[0,1,0],f:.63,initial:.20},
-{name:'CRYSTAL',caption:'ちょっと むずかしい 断面',p:octa(),n:[.62,.74,.26],f:.59,initial:.15},
-{name:'HIDDEN HEX',caption:'立方体の なかの 六角形',p:cube(),n:[1,1,1],f:.50,initial:.13}
-];
-let li=clamp(+(storage.getItem('acorn_slice_level')||0),0,levels.length-1),levelObj,section,t=0,visualT=0,lo,hi,sliding=false,pid=null,lastY=0,startT=0,lastTick=-9999,lastTickPos=0,soundOn=storage.getItem('acorn_slice_sound')!=='off',audio=null,won=false,hoverCount=0,raf=0,showHint=true;
-function audioInit(){if(!audio){try{audio=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(audio&&audio.state==='suspended')audio.resume()}
-function sound(freq=700,volume=.027,len=.055){if(!soundOn)return;audioInit();if(!audio)return;let st=audio.currentTime,o=audio.createOscillator(),g=audio.createGain();o.type='sine';o.frequency.setValueAtTime(freq,st);o.frequency.exponentialRampToValueAtTime(freq*.81,st+len);g.gain.setValueAtTime(.0001,st);g.gain.exponentialRampToValueAtTime(volume,st+.005);g.gain.exponentialRampToValueAtTime(.0001,st+len);o.connect(g);g.connect(audio.destination);o.start(st);o.stop(st+len+.005)}
-function successSound(){sound(523,.043,.19);setTimeout(()=>sound(659.25,.037,.28),85)}
-function configure(){levelObj=levels[li];levelObj.n=norm(levelObj.n);let projection=levelObj.p.pts.map(p=>dot(p,levelObj.n));lo=Math.min(...projection)+.0002;hi=Math.max(...projection)-.0002;t=lo+(hi-lo)*levelObj.initial;visualT=t;section=makeCut(levelObj.p,levelObj.n,t);won=false;hero.classList.remove('won');$('complete').classList.remove('show');$('level').textContent=String(li+1).padStart(2,'0');$('stageTitle').textContent=levelObj.caption;$('name').textContent=String(li+1).padStart(2,'0')+' / '+levelObj.name;$('tip').textContent=li===0?'動かすと、かたちが変わるよ':li<4?'おてほんと 同じかたちにしよう':'かたちと 大きさを よくみよう';$('progress').innerHTML=levels.map((_,i)=>`<span class="${i<=li?'done':''}"></span>`).join('');$('instruction').classList.toggle('hidden',li>1||!showHint);requestDraw();}
-function planeBasis(n){let aux=Math.abs(n[1])>.9?[1,0,0]:[0,1,0],u=norm(cross(n,aux)),v=norm(cross(n,u));return{u,v}}
-function makeCut(p,n,k){let {u,v}=planeBasis(n),pts=[];for(let [ia,ib] of p.edges){let a=p.pts[ia],b=p.pts[ib],da=dot(a,n)-k,db=dot(b,n)-k;if(da*db>0)continue;if(Math.abs(da-db)<1e-9)continue;let f=da/(da-db);if(f<0||f>1)continue;let v3=vadd(a,vmul(sub(b,a),f));if(!pts.some(x=>Math.hypot(...sub(x.p,v3))<1e-6))pts.push({p:v3,xy:[dot(v3,u),dot(v3,v)]})}
-if(pts.length<3)return{points:[],u,v,xy:[],center:[0,0]};let center=pts.reduce((s,x)=>vadd(s,x.xy),[0,0]).map(x=>x/pts.length);pts.sort((a,b)=>Math.atan2(a.xy[1]-center[1],a.xy[0]-center[0])-Math.atan2(b.xy[1]-center[1],b.xy[0]-center[0]));return{points:pts.map(x=>x.p),xy:pts.map(x=>x.xy),u,v,center}}
-function targetCut(){return makeCut(levelObj.p,levelObj.n,lo+(hi-lo)*levelObj.f)}
-function rayRadius(points,angle){if(points.length<3)return 0;let cx=points.reduce((s,p)=>s+p[0],0)/points.length,cy=points.reduce((s,p)=>s+p[1],0)/points.length;let d=[Math.cos(angle),Math.sin(angle)],min=1e5;for(let i=0;i<points.length;i++){let a=[points[i][0]-cx,points[i][1]-cy],b=[points[(i+1)%points.length][0]-cx,points[(i+1)%points.length][1]-cy],e=[b[0]-a[0],b[1]-a[1]],den=d[0]*e[1]-d[1]*e[0];if(Math.abs(den)<1e-9)continue;let r=(a[0]*e[1]-a[1]*e[0])/den;let seg=(a[0]*d[1]-a[1]*d[0])/den;if(r>=-1e-7&&seg>=-1e-7&&seg<=1+1e-7)min=Math.min(min,r)}return min===1e5?0:min}
-function difference(cut){let target=targetCut();if(cut.xy.length<3||target.xy.length<3)return 100;let err=0;for(let i=0;i<64;i++){let a=Math.PI*2*i/64,r=rayRadius(cut.xy,a)-rayRadius(target.xy,a);err+=r*r}let scale=Math.max(1.2,...levelObj.p.pts.map(v=>Math.hypot(...v)));return Math.sqrt(err/64)/scale+(cut.xy.length!==target.xy.length?.15:0)}
-// Projection and polygon drawing
-const camera=norm([4.8,3.8,6]),right=norm([camera[2],0,-camera[0]]),up=norm(cross(camera,right));let w=0,h=0,sz=0,ox=0,oy=0;
-function project(p){return[ox+dot(p,right)*sz,oy-dot(p,up)*sz]}
-function polyDraw(c,points,fill,stroke,lw=1){if(points.length<3)return;c.beginPath();points.forEach((p,i)=>i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.closePath();if(fill){c.fillStyle=fill;c.fill()}if(stroke){c.strokeStyle=stroke;c.lineWidth=lw;c.lineJoin='round';c.stroke()}}
-function canvasSize(canvas,context){let r=canvas.getBoundingClientRect(),d=Math.min(2,window.devicePixelRatio||1),ww=Math.max(2,Math.round(r.width*d)),hh=Math.max(2,Math.round(r.height*d));if(canvas.width!==ww||canvas.height!==hh){canvas.width=ww;canvas.height=hh}context.setTransform(d,0,0,d,0,0);return[r.width,r.height]}
-function renderScene(){[w,h]=canvasSize(scene,ctx);ctx.clearRect(0,0,w,h);sz=Math.min(w*.235,h*.275,106);ox=w*.5;oy=h*.46;
-// Pale studio aura, precision guides and soft floor
-let aura=ctx.createRadialGradient(ox,oy,9,ox,oy,h*.49);aura.addColorStop(0,'rgba(184,232,228,.23)');aura.addColorStop(.58,'rgba(222,245,241,.12)');aura.addColorStop(1,'rgba(247,250,249,0)');ctx.fillStyle=aura;ctx.fillRect(0,0,w,h);
-let floor=project([0,-1.67,0]);ctx.save();ctx.translate(floor[0],floor[1]+8);ctx.scale(1,.28);let shadow=ctx.createRadialGradient(0,0,4,0,0,sz*1.2);shadow.addColorStop(0,'rgba(32,89,94,.13)');shadow.addColorStop(1,'rgba(32,89,94,0)');ctx.fillStyle=shadow;ctx.beginPath();ctx.arc(0,0,sz*1.2,0,Math.PI*2);ctx.fill();ctx.restore();
-let obj=levelObj.p;let sorted=obj.faces.map(face=>({face,depth:face.reduce((s,i)=>s+dot(obj.pts[i],camera),0)/face.length})).sort((a,b)=>a.depth-b.depth);
-for(let {face} of sorted){let points=face.map(i=>project(obj.pts[i]));let a=obj.pts[face[0]],b=obj.pts[face[1]],d=obj.pts[face[2]],normal=norm(cross(sub(b,a),sub(d,a))),brightness=.45+.35*Math.abs(dot(normal,norm([-.5,1,.6])));polyDraw(ctx,points,`rgba(86,174,187,${(.075+brightness*.08).toFixed(3)})`,'rgba(91,166,176,.21)',1.0)}
-let k=visualT,n=levelObj.n,origin=vmul(n,k),{u,v}=planeBasis(n),s=1.9;let glass=[vadd(origin,vadd(vmul(u,-s),vmul(v,-s))),vadd(origin,vadd(vmul(u,s),vmul(v,-s))),vadd(origin,vadd(vmul(u,s),vmul(v,s))),vadd(origin,vadd(vmul(u,-s),vmul(v,s)))].map(project);
-polyDraw(ctx,glass,'rgba(244,255,253,.17)','rgba(30,172,185,.20)',1.1);
-let cut=makeCut(obj,n,k);if(cut.points.length>=3){let points=cut.points.map(project);ctx.save();ctx.shadowColor='rgba(7,183,198,.13)';ctx.shadowBlur=12;polyDraw(ctx,points,'rgba(18,187,199,.16)','rgba(0,163,184,.88)',2.8);ctx.restore();polyDraw(ctx,points,null,'rgba(255,255,255,.65)',.75);for(let p of points){ctx.beginPath();ctx.arc(...p,2.4,0,Math.PI*2);ctx.fillStyle='#08aebc';ctx.fill()}}
-// Tiny beautifully restrained cut-depth ticker
-let pct=clamp((t-lo)/(hi-lo),0,1);let tx=w-23,ty=h*.28,th=Math.min(130,h*.38);ctx.strokeStyle='rgba(110,165,171,.24)';ctx.lineWidth=2;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(tx,ty);ctx.lineTo(tx,ty+th);ctx.stroke();ctx.strokeStyle='#05adbc';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(tx,ty+th);ctx.lineTo(tx,ty+(1-pct)*th);ctx.stroke();ctx.fillStyle='#05adbc';ctx.beginPath();ctx.arc(tx,ty+(1-pct)*th,3.8,0,7);ctx.fill();
+const TOTAL=100, TAU=Math.PI*2, EPS=1e-7;
+const $=id=>document.getElementById(id);
+const xadd=(a,b)=>a.map((v,i)=>v+b[i]), xsub=(a,b)=>a.map((v,i)=>v-b[i]), dot=(a,b)=>a.reduce((s,v,i)=>s+v*b[i],0), cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]], norm=a=>Math.hypot(...a), unit=a=>a.map(x=>x/(norm(a)||1));
+const rndMaker=seed=>{let s=seed>>>0;return ()=>{s=(s+0x6d2b79f5)>>>0;let t=Math.imul(s^(s>>>15),1|s);t^=t+Math.imul(t^(t>>>7),61|t);return ((t^(t>>>14))>>>0)/4294967296}};
+const round=(v,p=1000)=>Math.round(v*p)/p;
+const shapeName=['四角すい','三角柱','四角柱','五角柱','斜めの柱','屋根型','八面体','六角柱'];
+function polygon2d(n,r,phase,rr){let p=[];for(let i=0;i<n;i++){let a=phase+TAU*i/n,k=.90+rr()*.19;p.push([Math.cos(a)*r[0]*k,Math.sin(a)*r[1]*k]);}return p;}
+function meshMake(kind,r){let vs=[],fs=[],poly,n;
+ if(kind===0){ // square pyramid with an offset tip
+  poly=[[-1.08,-.93],[1.03,-.93],[1.03,.94],[-1.08,.94]];n=4;
+  poly.forEach(p=>vs.push([p[0],p[1],-.93]));vs.push([(r()-.5)*.64,(r()-.5)*.56,1.27]);
+  fs.push([3,2,1,0]);for(let i=0;i<n;i++)fs.push([i,(i+1)%n,n]);
+ }else if(kind===6){ // asymmetric double pyramid
+  n=4;poly=polygon2d(n,[1.03,.88],Math.PI/4,r);poly.forEach(p=>vs.push([p[0],p[1],0]));
+  vs.push([.17+(r()-.5)*.28,-.13,1.21]);vs.push([-.16,.11,-.99]);
+  for(let i=0;i<n;i++){fs.push([i,(i+1)%n,n]);fs.push([(i+1)%n,i,n+1]);}
+ }else{
+  n=kind===1?3:kind===3?5:kind===7?6:4;
+  if(n===4){let wx=.83+r()*.3,wy=.71+r()*.32;poly=[[-wx,-wy],[wx,-wy],[wx,wy],[-wx,wy]];}
+  else poly=polygon2d(n,[1.02,.92],Math.PI/2+(r()-.5)*.35,r);
+  let h=1.0+(r()-.5)*.2,shiftX=kind===4?.35+r()*.18:0,shiftY=kind===4?.19+r()*.2:0;
+  let slopeX=kind===5?.32+r()*.15:0,slopeY=kind===5?.12:0;
+  poly.forEach(([x,y])=>vs.push([x,y,-h]));
+  poly.forEach(([x,y])=>vs.push([x+shiftX,y+shiftY,h+slopeX*x+slopeY*y]));
+  fs.push([...Array(n)].map((_,i)=>n-1-i));fs.push([...Array(n)].map((_,i)=>n+i));
+  for(let i=0;i<n;i++)fs.push([i,(i+1)%n,(i+1)%n+n,i+n]);
+ }
+ let min=[Infinity,Infinity,Infinity],max=[-Infinity,-Infinity,-Infinity];
+ vs.forEach(v=>v.forEach((x,i)=>{min[i]=Math.min(min[i],x);max[i]=Math.max(max[i],x)}));
+ let mid=min.map((v,i)=>(v+max[i])/2),sz=Math.max(...min.map((v,i)=>max[i]-v)),sca=2.48/sz;
+ vs=vs.map(v=>v.map((x,i)=>(x-mid[i])*sca));
+ let edges=[],set=new Set();fs.forEach(f=>{for(let i=0;i<f.length;i++){let a=f[i],b=f[(i+1)%f.length],key=[a,b].sort((x,y)=>x-y).join(',');if(!set.has(key)){set.add(key);edges.push([a,b]);}}});
+ return{vs,fs,edges,kind,name:shapeName[kind]};
 }
-function renderPreview(canvas,c,cut,isGoal){let [W,H]=canvasSize(canvas,c);c.clearRect(0,0,W,H);let poly=cut.xy;if(poly.length<3)return;let bx=poly.reduce((s,p)=>s+p[0],0)/poly.length,by=poly.reduce((s,p)=>s+p[1],0)/poly.length;let bound=Math.max(2.9,1.85*Math.max(...levelObj.p.pts.map(p=>Math.hypot(dot(p,cut.u),dot(p,cut.v)))));let scale=Math.min(W*.76,H*.79)/bound;let path=poly.map(([x,y])=>[W/2+(x-bx)*scale,H/2-(y-by)*scale]);c.save();polyDraw(c,path,isGoal?'rgba(5,173,188,.10)':'rgba(4,175,190,.14)',isGoal?'#2babb5':'#04adbe',isGoal?2.0:2.2);c.restore();}
-function render(){raf=0;if(Math.abs(visualT-t)>.00007){visualT+=(t-visualT)*.31;requestDraw()}else visualT=t;section=makeCut(levelObj.p,levelObj.n,visualT);renderScene();renderPreview(now,nx,section,false);renderPreview(goal,gx,targetCut(),true)}
-function requestDraw(){if(!raf)raf=requestAnimationFrame(render)}
-function checkWin(){if(won)return;let d=difference(makeCut(levelObj.p,levelObj.n,t));if(d>.028)return;won=true;sliding=false;successSound();$('complete').classList.add('show');$('finishTitle').textContent=li===levels.length-1?'ぜんぶ クリア！':'みつけた！';$('finishNote').textContent=li===levels.length-1?'8つの形を みつけたね':'ぴったり かさなった';$('next').textContent=li===levels.length-1?'もういちど →':'つぎの かたち →';requestDraw()}
-function onMove(event){if(!sliding||event.pointerId!==pid||won)return;const dy=event.clientY-lastY;lastY=event.clientY;let span=hi-lo;let intended=clamp(t-dy/Math.max(210,hero.getBoundingClientRect().height*.82)*span,lo,hi);t=intended;let step=Math.floor((t-lo)/span*28),tm=performance.now();if(step!==lastTickPos&&tm-lastTick>46){lastTickPos=step;lastTick=tm;sound(520+step*5,.009,.031)}requestDraw()}
-scene.addEventListener('pointerdown',e=>{if(won)return;e.preventDefault();audioInit();sliding=true;pid=e.pointerId;lastY=e.clientY;startT=t;scene.setPointerCapture(pid);showHint=false;$('instruction').classList.add('hidden')});scene.addEventListener('pointermove',onMove);function stop(e){if(e.pointerId!==pid||!sliding)return;sliding=false;pid=null;let d=difference(makeCut(levelObj.p,levelObj.n,t));if(d<.058){let min=Infinity,best=t,steps=360;for(let j=0;j<=steps;j++){let k=lo+(hi-lo)*j/steps,dd=difference(makeCut(levelObj.p,levelObj.n,k));if(dd<min&&Math.abs(k-t)<(hi-lo)*.085){min=dd;best=k}}if(min<.036){t=best;requestDraw();checkWin()}}else requestDraw()}
-scene.addEventListener('pointerup',stop);scene.addEventListener('pointercancel',stop);
-window.addEventListener('keydown',e=>{if(won)return;if(e.key==='ArrowUp'||e.key==='ArrowDown'){e.preventDefault();audioInit();t=clamp(t+(e.key==='ArrowUp'?1:-1)*(hi-lo)*.027,lo,hi);sound(660,.012,.035);requestDraw();if(difference(makeCut(levelObj.p,levelObj.n,t))<.025)checkWin()}});
-$('next').onclick=()=>{li=(li+1)%levels.length;storage.setItem('acorn_slice_level',li);configure();sound(620,.021,.06)};$('reset').onclick=()=>{audioInit();configure();sound(630,.018,.05)};$('sound').onclick=()=>{soundOn=!soundOn;storage.setItem('acorn_slice_sound',soundOn?'on':'off');updateSound();if(soundOn)sound(740,.027,.065)};function updateSound(){$('soundsvg').innerHTML=soundOn?'<path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="M17 9a4 4 0 0 1 0 6M19 6a8 8 0 0 1 0 12"/>':'<path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="m17 9 5 6m0-6-5 6"/>'}
-window.addEventListener('resize',requestDraw);if('ResizeObserver'in window)new ResizeObserver(requestDraw).observe(hero);updateSound();configure();
+function normalFor(p){let t=p.t*Math.PI/180,y=p.y*Math.PI/180;return[Math.sin(t)*Math.cos(y),Math.sin(t)*Math.sin(y),Math.cos(t)];}
+function planeFor(mesh,pose){let n=normalFor(pose),proj=mesh.vs.map(v=>dot(v,n));let extent=Math.max(...proj.map(Math.abs));return{n,d:pose.o*extent*.52};}
+function section(mesh,pose){let {n,d}=planeFor(mesh,pose),points=[];
+ for(const [i,j] of mesh.edges){let a=mesh.vs[i],b=mesh.vs[j],da=dot(a,n)-d,db=dot(b,n)-d;
+  if(Math.abs(da)<EPS)points.push(a);
+  if(Math.abs(db)<EPS)points.push(b);
+  if(da*db< -EPS*EPS){let f=da/(da-db);points.push(a.map((x,k)=>x+(b[k]-x)*f));}
+ }
+ let unique=[];points.forEach(p=>{if(!unique.some(q=>norm(xsub(p,q))<1e-5))unique.push(p);});
+ if(unique.length<3)return null;
+ let ref=Math.abs(n[2])<.92?[0,0,1]:[0,1,0],u=unit(cross(ref,n)),v=unit(cross(n,u));
+ let p2=unique.map(p=>[dot(p,u),dot(p,v)]),center=p2.reduce((s,p)=>[s[0]+p[0]/p2.length,s[1]+p[1]/p2.length],[0,0]);
+ let idx=[...unique.keys()].sort((i,j)=>Math.atan2(p2[i][1]-center[1],p2[i][0]-center[0])-Math.atan2(p2[j][1]-center[1],p2[j][0]-center[0]));
+ // The solids are convex; sorting cross-sectional vertices around their centroid is exact.
+ let sorted=idx.map(i=>p2[i]),area=Math.abs(sorted.reduce((s,p,i)=>{let q=sorted[(i+1)%sorted.length];return s+p[0]*q[1]-p[1]*q[0]},0))*.5;
+ if(area<.008)return null;
+ return{points:idx.map(i=>unique[i]),xy:sorted,area,count:unique.length,plane:{n,d}};
+}
+function edgeVectorSequence(pts,start,dir){let n=pts.length,out=[];for(let k=0;k<n;k++)out.push(pts[(start+dir*k+n*3)%n]);return out;}
+function seqKey(pts){let n=pts.length,out=[];for(let i=0;i<n;i++)for(let k=1;k<=Math.floor(n/2);k++){
+ let j=(i+k)%n;out.push(String(Math.round(Math.hypot(pts[i][0]-pts[j][0],pts[i][1]-pts[j][1])*1000)).padStart(5,'0'));
+}return out.join('-');}
+function canonical(s){let pts=s.xy,choice=null,key='~';for(let i=0;i<pts.length;i++)for(let dir of [1,-1]){
+ let arr=edgeVectorSequence(pts,i,dir),k=seqKey(arr);if(k<key){key=k;choice=arr;}
+}
+ let a=choice[0],b=choice[1],ang=-Math.atan2(b[1]-a[1],b[0]-a[0]);let c=Math.cos(ang),sn=Math.sin(ang);
+ let ctr=choice.reduce((acc,p)=>[acc[0]+p[0]/choice.length,acc[1]+p[1]/choice.length],[0,0]);
+ return{xy:choice.map(p=>{let x=p[0]-ctr[0],y=p[1]-ctr[1];return[x*c-y*sn,x*sn+y*c]}),key:s.count+'|'+String(Math.round(s.area*1000)).padStart(6,'0')+'|'+key};
+}
+function stageConfig(i){if(i<10)return{yaw:[0],tilt:[0,30,60,90],offset:[0],chapter:0};
+ if(i<20)return{yaw:[0,90,180,270],tilt:[0,30,60,90],offset:[0],chapter:1};
+ if(i<30)return{yaw:[0],tilt:[0,30,60,90],offset:[-1,0,1],chapter:2};
+ if(i<50)return{yaw:[0,45,90,135,180,225,270,315],tilt:[0,30,60,90],offset:[0],chapter:3};
+ return{yaw:[0,45,90,135,180,225,270,315],tilt:[0,30,60,90],offset:[-1,0,1],chapter:4};}
+function posesOf(cfg){let poses=[];for(let t of cfg.tilt)for(let y of cfg.yaw)for(let o of cfg.offset){if(t===0&&y!==0)continue;poses.push({t,y,o});}return poses;}
+function poseDistance(a,b,cfg){let at=cfg.tilt.indexOf(a.t),bt=cfg.tilt.indexOf(b.t),ay=cfg.yaw.indexOf(a.y),by=cfg.yaw.indexOf(b.y);let yy=cfg.yaw.length===1?0:Math.min(Math.abs(ay-by),cfg.yaw.length-Math.abs(ay-by));return Math.abs(at-bt)+yy+Math.abs(a.o-b.o);}
+function buildStage(i){let cfg=stageConfig(i),poses=posesOf(cfg),rand=rndMaker(99511+i*6137),found=null;
+ for(let attempt=0;attempt<42;attempt++){
+  let kinds=i<4?[0,0,5,0]:i<10?[0,5,4,3,1]:i<20?[1,3,4,5,0,2]:i<30?[2,5,0,3,1]:[0,1,2,3,4,5,6,7];
+  let kind=kinds[(i+attempt*3+Math.floor(rand()*kinds.length))%kinds.length];
+  let mesh=meshMake(kind,rand),entries=poses.map(p=>{let sec=section(mesh,p);return{pose:p,sec,can:sec?canonical(sec):null};});
+  let counts=new Map();entries.forEach(e=>{if(e.can)counts.set(e.can.key,(counts.get(e.can.key)||0)+1);});
+  let eligible=entries.filter(e=>e.sec&&e.sec.area>.28&&e.sec.area<6.3&&counts.get(e.can.key)===1);
+  if(i<10){let lesson=[30,60,90,0,30,60,90,0,60,30];eligible=eligible.filter(e=>e.pose.t===lesson[i]);}
+  if(i>=20&&i<26)eligible=eligible.filter(e=>e.pose.o!==0);
+  if(i>=30&&i<50&&i%5!==0)eligible=eligible.filter(e=>e.pose.t>0&&e.pose.y!==0);
+  if(i>=50&&i%4!==0)eligible=eligible.filter(e=>e.pose.o!==0);
+  if(i>=10&&i<20)eligible=eligible.filter(e=>e.pose.t>0&&e.pose.y!==0);
+  if(i>=50&&i%3===0)eligible=eligible.filter(e=>e.pose.o!==0&&e.pose.t>0);
+  if(eligible.length===0)continue;
+  // Prefer goal sections with multiple distinguishable sides, without selecting tiny slivers.
+  let selected=eligible.map(e=>{let neighbors=entries.filter(q=>q.sec&&q.can.key!==e.can.key);
+    let sameCount=neighbors.filter(q=>q.sec.count===e.sec.count).length;
+    let desiredEdges=i<10?4:i<30?4:5;
+    let score=rand()*3+Math.min(e.sec.area,2.5)*.15+Math.max(0,1.6-Math.abs(e.sec.count-desiredEdges))*.2+(sameCount?1:0)*.1;
+    if(i%7===0)score+=e.sec.count*.1;
+    return{e,score};}).sort((a,b)=>b.score-a.score)[0].e;
+  let startCandidates=entries.filter(e=>e.sec&&e.can.key!==selected.can.key);
+  if(i<3)startCandidates=startCandidates.filter(e=>e.pose.t===0&&e.pose.o===0&&e.pose.y===0);
+  else if(i===10)startCandidates=startCandidates.filter(e=>e.pose.y===0&&e.pose.t===30);
+  else if(i===20)startCandidates=startCandidates.filter(e=>e.pose.o===0);
+  let minDist=i<10?1:i<30?2:3;
+  let good=startCandidates.filter(e=>poseDistance(e.pose,selected.pose,cfg)>=minDist);
+  if(good.length)startCandidates=good;
+  if(startCandidates.length===0)continue;
+  let start=startCandidates[Math.floor(rand()*startCandidates.length)];
+  found={mesh,cfg,poses,goal:selected.pose,goalSection:selected.sec,goalCanon:selected.can,start:start.pose,entries,solutionCount:1,chapter:cfg.chapter,kind};break;
+ }
+ if(!found)throw Error('Unable to generate level '+(i+1));return found;
+}
+const stages=Array.from({length:TOTAL},(_,i)=>buildStage(i));
+
+// UI LEVEL 100 prototype: continuous control + precise discrete mathematical states.
+const chapters=['01 · 傾ける','02 · 向きを変える','03 · 切る位置','04 · 組み合わせる','05 · マスター'];
+const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
+const mix=(a,b,t)=>a+(b-a)*t;
+const mod=(v,n)=>((v%n)+n)%n;
+const nearest=(val,items)=>items.reduce((best,v)=>Math.abs(v-val)<Math.abs(best-val)?v:best,items[0]);
+const UI={
+ audioEnabled:true,context:null,noise:null,
+ ensureAudio(){if(!this.audioEnabled)return null;try{this.context=this.context||new(window.AudioContext||window.webkitAudioContext)();if(this.context.state==='suspended')this.context.resume();return this.context;}catch(e){return null}},
+ tone(f,at,dur,vol,kind='sine'){
+  let c=this.ensureAudio();if(!c)return;let o=c.createOscillator(),g=c.createGain();o.type=kind;
+  o.frequency.setValueAtTime(f,at);if(kind==='sine')o.frequency.exponentialRampToValueAtTime(f*.985,at+dur);
+  g.gain.setValueAtTime(.00001,at);g.gain.exponentialRampToValueAtTime(vol,at+.008);
+  g.gain.exponentialRampToValueAtTime(.00001,at+dur);
+  o.connect(g);g.connect(c.destination);o.start(at);o.stop(at+dur+.015);
+ },
+ tick(){let c=this.ensureAudio();if(!c)return;let t=c.currentTime;this.tone(520,t,.066,.013);this.tone(1040,t+.003,.035,.0031)},
+ win(){let c=this.ensureAudio();if(!c)return;let t=c.currentTime;this.tone(523.25,t,.43,.034);this.tone(659.25,t+.11,.44,.026);this.tone(783.99,t+.21,.65,.024)},
+};
+let saved={};try{saved=JSON.parse(localStorage.getItem('slice-flow-v3')||'{}')}catch(e){}
+let oldSaved={};try{oldSaved=JSON.parse(localStorage.getItem('slice-flow-v2')||'{}')}catch(e){}
+let unlocked=clamp(Number.isFinite(+saved.unlocked)?+saved.unlocked:(+oldSaved.unlocked||0),0,99);
+let index=clamp(Number.isFinite(+saved.index)?+saved.index:(+oldSaved.index||0),0,unlocked);
+UI.audioEnabled=saved.sound!==false;
+const scene=$('scene'),goalCanvas=$('goalCanvas'),nowCanvas=$('nowCanvas'),view=$('viewport');
+let stage,pose={t:0,y:0,o:0},solved=false,moveCount=0,hintCount=0,drag=null,offsetDrag=null,snapMotion=null,drawRequested=false,animateUntil=0,hasInteracted=false;
+const DPR=()=>Math.min(window.devicePixelRatio||1,2.5);
+const ctxFor=c=>{let w=c.clientWidth,h=c.clientHeight,d=DPR();let cw=Math.max(1,Math.round(w*d)),ch=Math.max(1,Math.round(h*d));if(c.width!==cw||c.height!==ch){c.width=cw;c.height=ch;}let ctx=c.getContext('2d');ctx.setTransform(d,0,0,d,0,0);return{ctx,w,h};};
+const viewportProj=(p,w,h,s)=>{
+ const az=.80,el=.42,ca=Math.cos(az),sa=Math.sin(az),ce=Math.cos(el),se=Math.sin(el);
+ const right=[ca,-sa,0],up=[-sa*se,-ca*se,ce],forward=[sa*ce,ca*ce,se];
+ return[w*.475+dot(p,right)*s,h*.46-dot(p,up)*s,dot(p,forward)];
+};
+const pathPoly=(ctx,a)=>{if(!a||a.length<3)return;ctx.beginPath();ctx.moveTo(a[0][0],a[0][1]);for(let i=1;i<a.length;i++)ctx.lineTo(a[i][0],a[i][1]);ctx.closePath();};
+const strokeLine=(ctx,a,b,color,width)=>{ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.lineWidth=width;ctx.strokeStyle=color;ctx.stroke();};
+function drawArena(now){
+ let{ctx,w,h}=ctxFor(scene);ctx.clearRect(0,0,w,h);if(!stage)return;
+ const isSuccess=solved,geometry=stage.mesh;
+ const scale=Math.min(w*.355,h*.405)*.71*(h<300?.82:h<400?.91:1);
+ const project=p=>viewportProj(p,w,h,scale);
+ const light=unit([-.35,.30,.92]),camera=unit([Math.sin(.8)*Math.cos(.42),Math.cos(.8)*Math.cos(.42),Math.sin(.42)]);
+ let ctrX=w*.475,baseY=h*.77;
+ // Atmospheric contact shadow, calibrated to stay quiet.
+ let gr=ctx.createRadialGradient(ctrX,baseY,8,ctrX,baseY,w*.34);
+ gr.addColorStop(0,'rgba(37,104,104,.145)');gr.addColorStop(.45,'rgba(50,129,119,.065)');gr.addColorStop(1,'rgba(60,120,120,0)');
+ ctx.fillStyle=gr;ctx.beginPath();ctx.ellipse(ctrX,baseY,w*.33,h*.10,0,0,TAU);ctx.fill();
+ // Transparent solid: softly layered panes, an outer bevel and precise edges.
+ const faces=geometry.fs.map(face=>{
+  let ps=face.map(i=>project(geometry.vs[i]));let a=geometry.vs[face[0]],b=geometry.vs[face[1]],c=geometry.vs[face[2]];
+  let n=unit(cross(xsub(b,a),xsub(c,a)));
+  return{ps,depth:ps.reduce((sum,p)=>sum+p[2]/ps.length,0),n,light:dot(n,light),front:dot(n,camera)>0};
+ }).sort((a,b)=>a.depth-b.depth);
+ faces.forEach(f=>{
+  pathPoly(ctx,f.ps);
+  let intensity=clamp(.5+f.light*.30,0,1),alpha=f.front?.14:.075;
+  ctx.fillStyle=f.front?`rgba(${Math.round(68+intensity*50)},${Math.round(159+intensity*43)},${Math.round(161+intensity*33)},${alpha})`:`rgba(139,194,193,${alpha})`;
+  ctx.fill();
+ });
+ // Cut plane: an animated, semi-transparent precision disk.
+ let sec=section(geometry,pose),{n,d}=planeFor(geometry,pose);
+ const ref=Math.abs(n[2])<.9?[0,0,1]:[0,1,0],u=unit(cross(ref,n)),v=unit(cross(n,u)),c=n.map(z=>z*d);
+ let r=1.43;
+ let plane=Array.from({length:44},(_,i)=>{let a=TAU*i/44;return project(xadd(c,xadd(u.map(x=>x*r*Math.cos(a)),v.map(x=>x*r*Math.sin(a)))))});
+ ctx.save();pathPoly(ctx,plane);
+ let pgrad=ctx.createLinearGradient(ctrX-w*.2,h*.26,ctrX+w*.24,h*.68);
+ pgrad.addColorStop(0,'rgba(52,191,166,.07)');pgrad.addColorStop(.45,'rgba(27,174,161,.13)');pgrad.addColorStop(1,'rgba(8,150,135,.07)');
+ ctx.fillStyle=pgrad;ctx.fill();ctx.restore();
+ pathPoly(ctx,plane);ctx.lineWidth=1.15;ctx.strokeStyle='rgba(35,167,151,.40)';ctx.stroke();
+ // Tangential highlights of the solid shell.
+ geometry.edges.forEach(([ia,ib])=>{
+  let a=project(geometry.vs[ia]),b=project(geometry.vs[ib]);
+  strokeLine(ctx,a,b,'rgba(255,255,255,.91)',3.6);
+  strokeLine(ctx,a,b,'rgba(67,118,121,.54)',1.35);
+ });
+ if(sec){
+  const points=sec.points.map(project);
+  ctx.save();pathPoly(ctx,points);
+  ctx.shadowColor=isSuccess?'rgba(9,194,167,.65)':'rgba(12,161,147,.31)';ctx.shadowBlur=isSuccess?28:14;
+  let fill=ctx.createLinearGradient(ctrX-w*.2,h*.29,ctrX+w*.2,h*.74);
+  fill.addColorStop(0,isSuccess?'rgba(76,216,187,.79)':'rgba(74,206,176,.50)');
+  fill.addColorStop(1,isSuccess?'rgba(12,164,147,.85)':'rgba(6,159,147,.56)');
+  ctx.fillStyle=fill;ctx.fill();ctx.restore();
+  ctx.save();pathPoly(ctx,points);ctx.lineWidth=isSuccess?4.2:3.0;ctx.strokeStyle=isSuccess?'#078b7b':'#079d8b';ctx.lineJoin='round';ctx.stroke();
+  ctx.globalAlpha=.93;points.forEach(p=>{ctx.beginPath();ctx.arc(p[0],p[1],2.5,0,TAU);ctx.fillStyle='#fcfffd';ctx.fill();});ctx.restore();
+ }
+ if(hintCount){let pts=stage.goalSection.points;let show=[pts[0],pts[Math.floor(pts.length/2)]].slice(0,hintCount);
+  show.forEach(p=>{let [x,y]=project(p);ctx.beginPath();ctx.arc(x,y,10,0,TAU);ctx.fillStyle='rgba(234,170,89,.17)';ctx.fill();ctx.beginPath();ctx.arc(x,y,5,0,TAU);ctx.fillStyle='#dfaa75';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();});
+ }
+ // Discrete angle notches: physical feedback, drawn beneath sculpture.
+ let cfg=stage.cfg,x0=w*.475,y0=h*.90;
+ if(h>260){ctx.save();for(let i=0;i<cfg.tilt.length;i++){
+    let x=x0+(i-(cfg.tilt.length-1)/2)*19;
+    let active=Math.abs(pose.t-cfg.tilt[i])<3.5;
+    ctx.beginPath();ctx.arc(x,y0,active?3:2,0,TAU);ctx.fillStyle=active?'rgba(16,157,139,.80)':'rgba(154,194,187,.55)';ctx.fill();
+   }ctx.restore();}
+ if(isSuccess&&now<animateUntil){let f=1-(animateUntil-now)/840;f=clamp(f,0,1);ctx.save();ctx.strokeStyle=`rgba(19,179,152,${(1-f)*.24})`;ctx.lineWidth=1.6;
+  ctx.beginPath();ctx.ellipse(ctrX,h*.50,w*(.12+f*.26),h*(.10+f*.20),0,0,TAU);ctx.stroke();ctx.restore();}
+}
+function drawSection(canvas,sec,goal=false){
+ let{ctx,w,h}=ctxFor(canvas);ctx.clearRect(0,0,w,h);
+ if(!sec)return;
+ let vs=canonical(sec).xy;
+ // Equal, fixed physical scale for goal and current. Same shape + size -> exact overlay.
+ let scale=Math.min(w,h)*.32;
+ let pts=vs.map(p=>[w/2+p[0]*scale,h/2-p[1]*scale]);
+ ctx.save();pathPoly(ctx,pts);ctx.lineJoin='round';ctx.lineWidth=2.2;
+ ctx.fillStyle=goal?'rgba(220,156,105,.13)':'rgba(26,169,148,.18)';ctx.fill();
+ ctx.strokeStyle=goal?'#cf986d':'#089f91';ctx.stroke();ctx.restore();
+ pts.forEach(([x,y])=>{ctx.beginPath();ctx.arc(x,y,2.05,0,TAU);ctx.fillStyle=goal?'#d79a69':'#149b8b';ctx.fill();});
+}
+function draw(){drawRequested=false;let now=performance.now();
+ if(snapMotion){let p=clamp((now-snapMotion.start)/snapMotion.duration,0,1);
+  let eased=p<1?1-Math.pow(1-p,3):1;
+  pose.t=mix(snapMotion.from.t,snapMotion.to.t,eased);pose.y=mix(snapMotion.from.y,snapMotion.to.y,eased);pose.o=mix(snapMotion.from.o,snapMotion.to.o,eased);
+  if(p>=1){pose={...snapMotion.to};let callback=snapMotion.done;snapMotion=null;if(callback)callback();}}
+ drawArena(now);drawSection(nowCanvas,section(stage.mesh,pose));
+ $('tiltLabel').textContent=Math.round(pose.t)+'°';
+ $('yawLabel').textContent=Math.round(mod(pose.y,360))+'°';
+ let cfg=stage.cfg,nowSec=section(stage.mesh,pose);
+ $('nowEdges').textContent=nowSec?`${nowSec.count}角形`:'断面なし';
+ if(cfg.offset.length>1){let position=(1-pose.o)*.5;let rail=$('posRail').getBoundingClientRect();let t=12+(rail.height-24)*position;$('posKnob').style.top=t+'px';$('posControl').setAttribute('aria-valuenow',Math.round(pose.o));}
+ if(snapMotion||(solved&&now<animateUntil))requestPaint();
+}
+function requestPaint(){if(!drawRequested){drawRequested=true;requestAnimationFrame(draw)}}
+function save(){try{localStorage.setItem('slice-flow-v3',JSON.stringify({unlocked,index,sound:UI.audioEnabled}))}catch(e){}}
+function labelSection(sec){return sec?`${sec.count}角形`:'断面なし'}
+function initStage(i){
+ index=i;stage=stages[i];pose={...stage.start};solved=false;moveCount=0;hintCount=0;drag=null;offsetDrag=null;snapMotion=null;
+ $('chapter').textContent='CHAPTER '+chapters[stage.chapter];$('stageCount').textContent=String(i+1).padStart(3,'0')+' / '+TOTAL;
+ $('progressFill').style.width=(i+1)/TOTAL*100+'%';$('solidName').textContent=stage.mesh.name;
+ $('prev').disabled=i===0;$('yawLabel').hidden=stage.cfg.yaw.length===1;$('angleSep').hidden=stage.cfg.yaw.length===1;
+ $('posControl').style.display=stage.cfg.offset.length>1?'flex':'none';
+ $('prompt').textContent=i===0?'切る面を、傾けよう':i===10?'横にも動かしてみよう':i===20?'切る位置も変えてみよう':'この断面をつくろう';
+ $('subprompt').textContent=i<10?'上下になぞると、切る面が回転する':i<20?'上下と左右の動きを組み合わせよう':i<30?'右のレールで、切る高さも変えられる':'形も大きさも、ぴったり重ねよう';
+ $('hint').disabled=false;$('hint').innerHTML='<svg viewBox="0 0 24 24"><path d="M9 18h6m-5-4h4m-4 7h4M8 15c-1.5-1.3-2.5-3-2.5-5A6.5 6.5 0 0 1 12 3.5 6.5 6.5 0 0 1 18.5 10c0 2-1 3.7-2.5 5L15 17H9l-1-2Z"/></svg>ヒント';
+ $('reset').style.display='flex';$('next').style.display='none';$('status').style.display='block';$('status').textContent='指を離すと、角度がカチッと揃う';
+ $('success').classList.remove('show');$('shine').classList.remove('show');
+ $('dragInstruction').innerHTML=stage.cfg.yaw.length>1?'<span class="gesture-icon">↕ ↔</span>上下・左右になぞって回す':'<span class="gesture-icon">↕</span>上へなぞって、面を傾ける';
+ $('dragInstruction').classList.toggle('off',i>=3);
+ $('goalEdges').textContent=labelSection(stage.goalSection);
+ drawSection(goalCanvas,stage.goalSection,true);save();requestPaint();
+}
+function animateTo(next,after,duration=215){
+ snapMotion={from:{...pose},to:{...next},start:performance.now(),duration,done:after};
+ requestPaint();
+}
+function pulseDetent(){const pip=$('pip');pip.classList.remove('pop');void pip.offsetWidth;pip.classList.add('pop');}
+function tickDetent(){UI.tick();pulseDetent();if('vibrate'in navigator)try{navigator.vibrate(6)}catch(e){}}
+function nearestPose(){let c=stage.cfg;let y=mod(nearest(pose.y,c.yaw.length===1?[0]:[...c.yaw.map(a=>a-360),...c.yaw,...c.yaw.map(a=>a+360)]),360);
+ let t=nearest(pose.t,c.tilt),o=nearest(pose.o,c.offset);
+ if(t===0)y=0;
+ return{t,y,o};
+}
+function snapAndCheck(){if(solved)return;let target=nearestPose();
+ let changed=Math.abs(target.t-pose.t)>.2||Math.abs(target.y-pose.y)>.2||Math.abs(target.o-pose.o)>.01;
+ if(changed)tickDetent();
+ animateTo(target,()=>{if(!solved){checkWin();}},changed?205:35);
+}
+function checkWin(){
+ if(solved)return;
+ let sec=section(stage.mesh,pose);
+ if(sec&&canonical(sec).key===stage.goalCanon.key){
+  solved=true;unlocked=Math.max(unlocked,Math.min(TOTAL-1,index+1));save();UI.win();
+  $('winDetail').textContent=moveCount<=2?'見事なひらめき！':'断面を見つけた！';
+  $('success').classList.add('show');$('shine').classList.remove('show');void $('shine').offsetWidth;$('shine').classList.add('show');
+  $('next').style.display='inline-flex';$('reset').style.display='none';$('status').textContent='正解！';$('status').style.display='none';$('hint').disabled=true;
+  animateUntil=performance.now()+840;requestPaint();
+ }
+}
+function stepChange(type,step){
+ if(solved||!step)return;
+ let cfg=stage.cfg,tgt={...pose},changed=false;
+ if(type==='tilt'){let idx=cfg.tilt.indexOf(nearest(pose.t,cfg.tilt));let n=clamp(idx+step,0,cfg.tilt.length-1);tgt.t=cfg.tilt[n];changed=n!==idx;}
+ if(type==='yaw'&&cfg.yaw.length>1){let idx=cfg.yaw.indexOf(nearest(mod(pose.y,360),cfg.yaw));let n=mod(idx+step,cfg.yaw.length);tgt.y=cfg.yaw[n];changed=n!==idx;if(tgt.t===0)tgt.t=cfg.tilt[1];}
+ if(type==='offset'&&cfg.offset.length>1){let idx=cfg.offset.indexOf(nearest(pose.o,cfg.offset));let n=clamp(idx+step,0,cfg.offset.length-1);tgt.o=cfg.offset[n];changed=n!==idx;}
+ if(changed){snapMotion=null;moveCount++;tickDetent();animateTo(tgt,checkWin,200);}
+}
+// Surface gesture: actual plane follows finger on every movement; the result snaps to a discrete mathematical solution.
+view.addEventListener('pointerdown',e=>{
+ if(solved||e.target.closest('#posControl'))return;
+ if(drag)return;
+ e.preventDefault();UI.ensureAudio();snapMotion=null;
+ drag={id:e.pointerId,x:e.clientX,y:e.clientY,start:{...pose},lastT:nearest(pose.t,stage.cfg.tilt),lastY:nearest(mod(pose.y,360),stage.cfg.yaw),moved:false};
+ try{view.setPointerCapture(e.pointerId)}catch(_){}
+ view.classList.add('grabbing');$('dragInstruction').classList.add('off');
+});
+view.addEventListener('pointermove',e=>{
+ if(!drag||drag.id!==e.pointerId||solved)return;
+ e.preventDefault();let dx=e.clientX-drag.x,dy=e.clientY-drag.y,cfg=stage.cfg;
+ if(Math.hypot(dx,dy)>2)drag.moved=true;
+ // Small soft attraction (not a dead-zone) around discrete click positions.
+ const influence=(v,arr)=>{let n=nearest(v,arr),dif=v-n;return Math.abs(dif)<5?n+dif*.73:v;};
+ let min=cfg.tilt[0],max=cfg.tilt[cfg.tilt.length-1];
+ pose.t=influence(clamp(drag.start.t-dy*.57,min,max),cfg.tilt);
+ if(cfg.yaw.length>1){
+  if(Math.abs(dx)>6&&pose.t<7)pose.t=19; // horizontal motion cannot change a mathematically horizontal plane.
+  pose.y=drag.start.y+dx*.72;
+  pose.y=influence(pose.y,Array.from({length:26},(_,i)=>-360+i*45));
+ }else pose.y=0;
+ // The plane changes in real time and stays in view during gestures.
+ let t=nearest(pose.t,cfg.tilt),y=nearest(mod(pose.y,360),cfg.yaw);
+ if(t!==drag.lastT||(cfg.yaw.length>1&&y!==drag.lastY)){
+  drag.lastT=t;drag.lastY=y;tickDetent();moveCount++;
+ }
+ requestPaint();
+});
+function releaseDrag(e){if(!drag||drag.id!==e.pointerId)return;
+ if(!drag.moved){drag=null;view.classList.remove('grabbing');return;}
+ drag=null;view.classList.remove('grabbing');snapAndCheck();
+}
+view.addEventListener('pointerup',releaseDrag);view.addEventListener('pointercancel',releaseDrag);
+// Vertical height selector: continuous visual feedback, exactly three allowed planes.
+const railY=y=>{let r=$('posRail').getBoundingClientRect();let f=clamp((y-r.top-12)/(r.height-24),0,1);return 1-2*f;};
+$('posControl').addEventListener('pointerdown',e=>{
+ if(solved)return;e.preventDefault();e.stopPropagation();UI.ensureAudio();snapMotion=null;offsetDrag={id:e.pointerId,last:nearest(pose.o,stage.cfg.offset)};
+ try{$('posControl').setPointerCapture(e.pointerId)}catch(_){ }
+ $('posControl').classList.add('dragging');pose.o=railY(e.clientY);requestPaint();
+});
+$('posControl').addEventListener('pointermove',e=>{
+ if(!offsetDrag||e.pointerId!==offsetDrag.id)return;e.preventDefault();e.stopPropagation();pose.o=railY(e.clientY);
+ let k=nearest(pose.o,stage.cfg.offset);if(k!==offsetDrag.last){offsetDrag.last=k;tickDetent();moveCount++;}requestPaint();
+});
+function releaseOffset(e){if(!offsetDrag||offsetDrag.id!==e.pointerId)return;offsetDrag=null;$('posControl').classList.remove('dragging');snapAndCheck();}
+$('posControl').addEventListener('pointerup',releaseOffset);$('posControl').addEventListener('pointercancel',releaseOffset);
+$('posControl').addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown'].includes(e.key)){e.preventDefault();stepChange('offset',e.key==='ArrowUp'?1:-1)}});
+$('hint').addEventListener('click',()=>{if(solved)return;hintCount=Math.min(2,hintCount+1);$('status').textContent='金色の点を通るように切ってみよう';$('hint').disabled=hintCount>=2;requestPaint();});
+$('reset').addEventListener('click',()=>{if(solved)return;snapMotion=null;tickDetent();animateTo({...stage.start},()=>{if(!solved)checkWin()},210);});
+$('prev').addEventListener('click',()=>{if(index>0)initStage(index-1)});
+$('next').addEventListener('click',()=>{if(!solved)return;if(index<TOTAL-1)initStage(index+1);else{$('next').style.display='none';$('status').style.display='block';$('status').textContent='全100問クリア！';}});
+$('sound').addEventListener('click',()=>{UI.audioEnabled=!UI.audioEnabled;$('soundIcon').innerHTML=UI.audioEnabled?'<path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18 5a10 10 0 0 1 0 14"/>':'<path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="m16 9 5 6m0-6-5 6"/>';$('sound').setAttribute('aria-label',UI.audioEnabled?'音をオフにする':'音をオンにする');save();if(UI.audioEnabled)UI.tick()});
+if(!UI.audioEnabled)$('soundIcon').innerHTML='<path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="m16 9 5 6m0-6-5 6"/>';
+const sheet=$('levelSheet');
+function showLevels(){let grid=$('levelGrid');grid.innerHTML='';for(let i=0;i<TOTAL;i++){
+ let button=document.createElement('button');button.textContent=i+1;button.disabled=i>unlocked;button.className=i===index?'current-level':i<unlocked?'done-level':i>unlocked?'locked':'';
+ button.setAttribute('aria-label',`ステージ ${i+1}`);button.addEventListener('click',()=>{hideLevels();initStage(i)});grid.appendChild(button);
+ }sheet.classList.add('open');sheet.setAttribute('aria-hidden','false');$('closeLevels').focus();
+}
+function hideLevels(){sheet.classList.remove('open');sheet.setAttribute('aria-hidden','true');$('levels').focus()}
+$('levels').addEventListener('click',showLevels);$('closeLevels').addEventListener('click',hideLevels);
+sheet.addEventListener('click',e=>{if(e.target===sheet)hideLevels()});
+window.addEventListener('keydown',e=>{if(e.key==='Escape'&&sheet.classList.contains('open')){hideLevels();return;}
+ if(sheet.classList.contains('open')||e.target.matches('button, [role="slider"]'))return;
+ if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();stepChange(e.key==='ArrowUp'||e.key==='ArrowDown'?'tilt':'yaw',e.key==='ArrowUp'||e.key==='ArrowRight'?1:-1)}
+ if(e.key==='PageUp'||e.key==='PageDown'){e.preventDefault();stepChange('offset',e.key==='PageUp'?1:-1)}
+});
+window.addEventListener('resize',()=>{drawSection(goalCanvas,stage.goalSection,true);requestPaint()});
+window.addEventListener('orientationchange',()=>setTimeout(()=>{drawSection(goalCanvas,stage.goalSection,true);requestPaint()},120));
+window.__sliceDebug={stages,section,canonical,setStage:(n)=>initStage(n-1),setPose:(p)=>{snapMotion=null;pose={...p};requestPaint();checkWin()},state:()=>({index:index+1,pose,solved,solutionCount:stage.solutionCount}),summaries:()=>stages.map((s,i)=>({level:i+1,kind:s.mesh.name,options:s.entries.length,goal:s.goal,initial:s.start}))};
+initStage(index);
 })();
-</script></body></html>
+</script>
+</body>
+</html>
